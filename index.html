@@ -44,12 +44,11 @@
             justify-content: center;
             user-select: none;
             overflow-x: hidden;
-            font-size: 1.6rem; /* LARGER BASE FONT */
+            font-size: 1.6rem; 
         }
 
         * { box-sizing: border-box; }
 
-        /* --- UTILITIES --- */
         .hidden { display: none !important; }
         .flex { display: flex; }
         .flex-col { flex-direction: column; }
@@ -109,7 +108,6 @@
             border-radius: 12px;
             margin: 0.5rem;
         }
-        /* COLORFUL BUTTONS */
         .token-btn.num { background-color: var(--cyan-500); color: white; border-color: var(--cyan-600); }
         .token-btn.op { background-color: var(--orange-500); color: white; border-color: var(--stone-800); }
         .token-btn.selected-num, .token-btn.selected-op { 
@@ -134,10 +132,8 @@
             border-top: 5px solid var(--stone-800);
         }
 
-        /* --- SPRITES --- */
         .hero { position: absolute; bottom: 4rem; left: 15%; transition: all 0.3s; z-index: 5; }
         .monster { position: absolute; bottom: 4rem; right: 15%; transition: all 0.3s; z-index: 5; }
-        
         .hero-body { width: 4.5rem; height: 5.5rem; background: var(--cyan-600); border: 4px solid black; position: relative; }
         .hero-head { width: 3.2rem; height: 3.2rem; background: #e0aa89; border: 4px solid black; position: absolute; top: -3rem; left: 0.6rem; }
         .monster-body { width: 6.5rem; height: 8.5rem; background: var(--purple-900); border: 4px solid black; position: relative; }
@@ -157,20 +153,12 @@
             width: 10rem; font-size: 3.5rem; text-align: center; border: 6px solid black; font-family: inherit; font-weight: bold;
         }
 
-        /* --- WORKING SCREEN --- */
         .working-line {
             font-size: 2.5rem;
             margin: 0.6rem 0;
             display: block;
             letter-spacing: 2px;
             white-space: nowrap;
-        }
-        .final-answer-box {
-            background-color: var(--yellow-300);
-            font-size: 2.8rem;
-            font-weight: bold;
-            padding: 1rem;
-            margin-top: 1rem;
         }
     </style>
 </head>
@@ -437,8 +425,9 @@
                     </div>
                 `;
             } else {
-                /* ERROR MESSAGE IN RED INK LOGIC */
-                const isError = state.feedback.includes('Mistake') || state.feedback.includes('Wrong');
+                const isError = state.feedback.toLowerCase().includes('mistake') || 
+                                state.feedback.toLowerCase().includes('wrong') || 
+                                state.feedback.toLowerCase().includes('error');
                 const feedbackColor = isError ? 'var(--red-ink)' : 'var(--blue-700)';
                 const feedbackBg = isError ? '#fff5f5' : 'white';
 
@@ -482,7 +471,13 @@
             state.currentLevel = id; state.screen = 'game'; state.monsterHP = 0; state.questionCount = 1; 
             loadNewQuestion(); render(); 
         }
-        function exitGame() { state.screen = 'menu'; stopMusic(); render(); }
+
+        function exitGame() { 
+            state.screen = 'menu'; // RETURNS TO MAIN SECTION
+            stopMusic(); 
+            render(); 
+        }
+
         function loadNewQuestion() { 
             state.tokens = generateEquation(state.currentLevel); 
             state.history = [{ snapshot: JSON.parse(JSON.stringify(state.tokens)) }]; 
@@ -507,7 +502,7 @@
                         const hasMD = state.tokens.filter(t => t.type === 'op').some(o => o.value === '*' || o.value === '/');
                         if (hasBra) state.feedback = "Mistake: Brackets () first!";
                         else if (hasMD && (t2.value === '+' || t2.value === '-')) state.feedback = "Mistake: Multiply/Divide before Add/Subtract!";
-                        else state.feedback = "Mistake: Same priority? Solve Left to Right!";
+                        else state.feedback = "Mistake: Solve from LEFT to RIGHT!";
                         setTimeout(()=> { state.shake = false; state.selectedIndices = []; render(); }, 1200);
                     }
                 } else { state.selectedIndices = []; }
@@ -541,7 +536,12 @@
                     } else state.feedback = "EXCELLENT! What's next?";
                     render();
                 }, 400);
-            } else { state.feedback = "Wrong answer! Calculate again."; soundEffects.wrong(); state.shake = true; setTimeout(()=> { state.shake = false; render(); }, 500); }
+            } else { 
+                state.feedback = "Calculation error! Calculate again."; // ADDED REQUIREMENT
+                soundEffects.wrong(); 
+                state.shake = true; 
+                setTimeout(()=> { state.shake = false; render(); }, 500); 
+            }
         }
 
         function proceedToNextQuestion() { state.questionCount++; loadNewQuestion(); render(); }
