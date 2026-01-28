@@ -375,13 +375,12 @@
                 const op = move.op.value;
                 const val = safeEval(leftVal, op, rightVal);
                 
-                // RULE 1: Division must result in a whole number
+                // Division Whole Number Rule (Code 2b)
                 if (op === '/' && leftVal % rightVal !== 0) return false;
                 
-                // RULE 2: Subtraction must result in a positive whole number (>0)
+                // Subtraction Positive Rule (Code 2b)
                 if (op === '-' && val <= 0) return false;
                 
-                // Intermediate step must be a positive integer within reasonable range
                 if (!Number.isInteger(val) || val <= 0 || val > 150) return false;
                 
                 const newTokens = [];
@@ -481,7 +480,10 @@
         };
 
         const playMusic = () => {
+            // Ensure only 1 music interval exists
+            if (musicInterval) clearInterval(musicInterval);
             if (!state.isMusicOn) return;
+
             const ctx = initAudio();
             const melody = [261.63, 329.63, 392.00, 523.25, 196.00, 246.94, 293.66, 392.00, 220.00, 261.63, 329.63, 440.00, 174.61, 220.00, 261.63, 349.23];
             let nextTime = ctx.currentTime + 0.1;
@@ -492,7 +494,6 @@
                 while (nextTime < ctx.currentTime + 0.5) {
                     const freq = melody[noteIndex % melody.length];
                     playTone('triangle', freq, nextTime - ctx.currentTime, 0.2, 0.015);
-                    // Bass
                     if (noteIndex % 4 === 0) {
                         playTone('square', freq / 2, nextTime - ctx.currentTime, 0.4, 0.01);
                     }
@@ -500,12 +501,14 @@
                     noteIndex++;
                 }
             };
-            if (musicInterval) clearInterval(musicInterval);
             musicInterval = setInterval(schedule, 100);
         };
 
         const stopMusic = () => {
-            if (musicInterval) clearInterval(musicInterval);
+            if (musicInterval) {
+                clearInterval(musicInterval);
+                musicInterval = null;
+            }
         };
 
         const soundEffects = {
@@ -664,10 +667,10 @@
 
             if (state.gameState === 'delay') {
                 let historyHtml = state.history.map((h, i) => `
-                    <div class="flex items-center justify-center gap-3 animate-fade-in-up w-full" style="opacity: 0.8;">
-                        ${i > 0 ? `<div style="font-size: 1.875rem; color: var(--stone-400); font-weight: bold;">=</div>` : ''}
+                    <div class="flex items-center justify-center gap-3 w-full" style="margin-bottom: 0.5rem;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--stone-600);">Step ${i+1}:</div>
                         <div class="flex gap-2 p-2 rounded" style="background-color: var(--white); border: 2px solid var(--stone-300);">
-                            ${h.prevTokens.map(t => `<span style="font-size: 1.5rem; font-weight: bold; color: var(--stone-700);">${t.type === 'op' ? getDisplayOp(t.value) : t.value}</span>`).join('')}
+                            <span style="font-size: 1.5rem; font-weight: bold; color: var(--stone-700);">${h.step}</span>
                         </div>
                     </div>
                 `).join('');
@@ -680,12 +683,12 @@
                                 ${state.delayTimer}
                             </div>
                         </div>
-                        <h2 class="mb-6 flex items-center gap-2" style="font-size: 1.875rem; color: var(--green-600); font-weight: bold; letter-spacing: 0.1em;">${ICONS.check} COMPLETE!</h2>
+                        <h2 class="mb-4 flex items-center gap-2" style="font-size: 1.875rem; color: var(--green-600); font-weight: bold; letter-spacing: 0.1em;">WORKING</h2>
                         <div class="flex flex-col items-center gap-2 p-6 rounded-xl w-full max-w-xl" style="background-color: var(--stone-100); border: 4px solid var(--stone-200);">
                             ${historyHtml}
-                            <div class="flex items-center justify-center gap-3 w-full animate-fade-in-up">
-                                <div style="font-size: 1.875rem; color: var(--stone-400); font-weight: bold;">=</div>
-                                <div class="animate-bounce" style="padding: 0.75rem 1.5rem; background-color: var(--green-500); border: 4px solid var(--green-700); color: white; font-size: 2.25rem; font-weight: bold; border-radius: 0.25rem;">
+                            <div class="flex items-center justify-center gap-3 w-full mt-4 p-4 rounded-lg" style="background-color: var(--yellow-300); border: 4px solid var(--yellow-600);">
+                                <div style="font-size: 1.875rem; color: var(--yellow-800); font-weight: bold;">FINAL ANSWER:</div>
+                                <div style="color: var(--stone-900); font-size: 2.25rem; font-weight: bold;">
                                     ${state.tokens[0]?.value}
                                 </div>
                             </div>
@@ -786,7 +789,6 @@
                 </div>
             `;
 
-            // Focus input if active
             if(state.selectedStep) {
                 const inp = document.getElementById('gameInput');
                 if(inp) inp.focus();
@@ -892,7 +894,6 @@
                 state.monsterHP = Math.max(0, state.monsterHP - POINTS_LOSE);
                 state.heroAction = 'damage';
                 
-                // Logic Feedback
                 const clickedOp = token.value;
                 const clickedPriority = (clickedOp === '*' || clickedOp === '/') ? 2 : 1;
                 const hasBrackets = state.tokens.some(t => t.value === '(');
@@ -925,7 +926,6 @@
 
             if (userVal === correctVal) {
                 soundEffects.correct();
-                // Apply update
                 const newTokens = [];
                 for (let i = 0; i < state.tokens.length; i++) {
                     if (state.tokens[i].id === step.left.id) {
