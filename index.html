@@ -51,18 +51,18 @@
 
         * { box-sizing: border-box; }
 
-        /* --- FIXED APP AREA WITH SCROLLING SUPPORT --- */
+        /* --- STRETCHABLE APP AREA --- */
         #app {
             width: 98vw;
-            max-width: 1200px; /* Expanded for Level 5 Equations */
-            height: 95vh;
+            max-width: 1400px; /* Expanded Width for maximum stretch */
+            height: 96vh;
             background-color: var(--sky-300);
             border: 10px solid var(--stone-800);
             box-shadow: 0 40px 80px rgba(0,0,0,0.7);
             display: flex;
             flex-direction: column;
             position: relative;
-            overflow-y: auto; /* MAINTAIN SCROLLING IF NEEDED */
+            overflow-y: auto; /* Internal scrolling for long content */
             border-radius: 16px;
         }
 
@@ -72,6 +72,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            width: 100%;
         }
 
         .hidden { display: none !important; }
@@ -81,10 +82,12 @@
         .justify-center { justify-content: center; }
         .justify-between { justify-content: space-between; }
         .w-full { width: 100%; }
+        
         .pixel-card { 
             box-shadow: 10px 10px 0px 0px rgba(0,0,0,0.4); 
             border: 6px solid var(--stone-800); 
             background: white;
+            width: 100%;
         }
 
         /* --- ANIMATIONS --- */
@@ -112,7 +115,6 @@
         .btn:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px; }
 
         .btn-level {
-            width: 100%;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -146,6 +148,7 @@
             background-color: var(--sky-400);
             position: relative;
             overflow: hidden;
+            width: 100%;
         }
         .ground {
             position: absolute;
@@ -161,7 +164,7 @@
         .monster-body { width: 8rem; height: 11rem; background: var(--magenta); border: 4px solid black; position: relative; }
         .character-eye { width: 11px; height: 11px; background: black; position: absolute; top: 12px; border-radius: 50%; }
 
-        .hero.attack { transform: translateX(450px); }
+        .hero.attack { transform: translateX(40vw); } /* Responsive attack distance */
         .slash-effect {
             position: absolute; top: 30%; right: 20%;
             width: 120px; height: 40px; background: white;
@@ -426,7 +429,7 @@
                     <div class="hero animate-float ${state.heroAction === 'attack' ? 'attack' : ''}">
                         <div class="hero-head">
                             <div class="character-eye animate-blink" style="left:8px;"></div>
-                            <div class="character-eye animate-blink" style="right:12px;"></div>
+                            <div class="character-eye animate-blink" style="right:15px;"></div>
                         </div>
                         <div class="hero-body"></div>
                     </div>
@@ -462,7 +465,7 @@
                 contentHtml = `
                     <div class="text-center w-full">
                         <h2 style="font-size: 3.5rem; color: var(--green-600); margin-top:0;">CORRECT SOLUTION!</h2>
-                        <div class="pixel-card p-8 mb-8" style="background: var(--stone-100); text-align: left; display: inline-block; min-width: 90%; border-color: var(--green-600);">
+                        <div class="pixel-card p-8 mb-8" style="background: var(--stone-100); text-align: left; display: inline-block; min-width: 70%; border-color: var(--green-600);">
                             ${workLines.join('')}
                         </div>
                         <br>
