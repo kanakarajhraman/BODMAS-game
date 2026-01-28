@@ -258,6 +258,15 @@
         
         .text-shadow-sm { text-shadow: 1px 1px 0px rgba(255,255,255,0.5); }
         .bg-pattern { background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzj//v37zwjjgzhhYWGMYAIAI8YOAymwF7AAAAAASUVORK5CYII='); }
+
+        .highlight-working {
+            background-color: var(--yellow-300);
+            border: 2px solid var(--yellow-600);
+            border-radius: 4px;
+            padding: 2px 4px;
+            margin: 0 2px;
+            color: var(--stone-900);
+        }
     </style>
 </head>
 <body>
@@ -283,7 +292,7 @@
         // --- STATE MANAGEMENT ---
         const state = {
             screen: 'menu',
-            unlockedLevels: [1],
+            unlockedLevels: [1, 2, 3, 4, 5], // ALL LEVELS UNLOCKED FOR CODE 4C
             currentLevel: 1,
             tokens: [],
             history: [],
@@ -339,14 +348,14 @@
                 
                 if (!level.brackets) {
                     for (let i = 0; i < nums.length; i++) {
-                        tokens.push({ type: 'num', value: nums[i], id: `n-${i}` });
-                        if (i < ops.length) tokens.push({ type: 'op', value: ops[i], id: `o-${i}` });
+                        tokens.push({ type: 'num', value: nums[i], id: `n-${i}-${Math.random()}` });
+                        if (i < ops.length) tokens.push({ type: 'op', value: ops[i], id: `o-${i}-${Math.random()}` });
                     }
                 } else {
                     const pattern = getRandomInt(0, level.length === 5 ? 3 : 3);
-                    const tNum = (i) => ({ type: 'num', value: nums[i], id: `n-${i}` });
-                    const tOp = (i) => ({ type: 'op', value: ops[i], id: `o-${i}` });
-                    const tBra = (v, i) => ({ type: 'bracket', value: v, id: `b-${i}` });
+                    const tNum = (i) => ({ type: 'num', value: nums[i], id: `n-${i}-${Math.random()}` });
+                    const tOp = (i) => ({ type: 'op', value: ops[i], id: `o-${i}-${Math.random()}` });
+                    const tBra = (v, i) => ({ type: 'bracket', value: v, id: `b-${i}-${Math.random()}` });
 
                     if (level.length === 4) {
                         if (pattern === 0) tokens = [tBra('(',0), tNum(0), tOp(0), tNum(1), tBra(')',1), tOp(1), tNum(2), tOp(2), tNum(3)];
@@ -375,12 +384,8 @@
                 const op = move.op.value;
                 const val = safeEval(leftVal, op, rightVal);
                 
-                // Division Whole Number Rule (Code 2b)
                 if (op === '/' && leftVal % rightVal !== 0) return false;
-                
-                // Subtraction Positive Rule (Code 2b)
                 if (op === '-' && val <= 0) return false;
-                
                 if (!Number.isInteger(val) || val <= 0 || val > 150) return false;
                 
                 const newTokens = [];
@@ -480,7 +485,6 @@
         };
 
         const playMusic = () => {
-            // Ensure only 1 music interval exists
             if (musicInterval) clearInterval(musicInterval);
             if (!state.isMusicOn) return;
 
@@ -670,7 +674,12 @@
                     <div class="flex items-center justify-center gap-3 w-full" style="margin-bottom: 0.5rem;">
                         <div style="font-size: 1.5rem; font-weight: bold; color: var(--stone-600);">Step ${i+1}:</div>
                         <div class="flex gap-2 p-2 rounded" style="background-color: var(--white); border: 2px solid var(--stone-300);">
-                            <span style="font-size: 1.5rem; font-weight: bold; color: var(--stone-700);">${h.step}</span>
+                            <div style="font-size: 1.5rem; font-weight: bold;">
+                                ${h.prevTokens.map(t => {
+                                    const isPart = (t.id === h.leftId || t.id === h.opId || t.id === h.rightId);
+                                    return `<span class="${isPart ? 'highlight-working' : ''}" style="color: ${isPart ? 'var(--stone-900)' : 'var(--stone-700)'}">${t.type === 'op' ? getDisplayOp(t.value) : t.value}</span>`;
+                                }).join('')}
+                            </div>
                         </div>
                     </div>
                 `).join('');
@@ -714,7 +723,6 @@
                     </div>
                 `;
             } else {
-                // INPUT / ANIMATION STATE
                 let feedbackClass = (state.feedback.includes('Mistake') || state.feedback.includes('Wrong') || state.feedback.includes('Invalid')) 
                     ? 'background-color: var(--red-50); border-color: var(--red-200); color: var(--red-600);' 
                     : 'background-color: var(--blue-50); border-color: var(--blue-200); color: var(--blue-800);';
@@ -926,6 +934,16 @@
 
             if (userVal === correctVal) {
                 soundEffects.correct();
+                
+                // Store state for Working screen
+                state.history.push({
+                    prevTokens: JSON.parse(JSON.stringify(state.tokens)),
+                    leftId: step.left.id,
+                    opId: step.op.id,
+                    rightId: step.right.id,
+                    res: correctVal
+                });
+
                 const newTokens = [];
                 for (let i = 0; i < state.tokens.length; i++) {
                     if (state.tokens[i].id === step.left.id) {
@@ -937,10 +955,6 @@
                 }
                 
                 const cleanedTokens = cleanBrackets(newTokens);
-                state.history.push({
-                    step: `${step.left.value} ${step.op.value === '*' ? '×' : step.op.value === '/' ? '÷' : step.op.value} ${step.right.value} = ${correctVal}`,
-                    prevTokens: state.tokens
-                });
                 state.tokens = cleanedTokens;
                 state.selectedStep = null;
                 
