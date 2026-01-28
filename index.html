@@ -51,11 +51,11 @@
 
         * { box-sizing: border-box; }
 
-        /* --- FIXED 3:4 RATIO CONTAINER (Slightly Expanded) --- */
+        /* --- FIXED APP AREA --- */
         #app {
-            width: 95vw;
-            max-width: 750px; /* Expanded Width */
-            height: calc(min(95vw, 750px) * 4 / 3); 
+            width: 850px; /* Expanded Width for Level 4/5 */
+            height: 900px; /* Fixed Height */
+            max-width: 98vw;
             max-height: 98vh;
             background-color: var(--sky-300);
             border: 8px solid var(--stone-800);
@@ -70,7 +70,7 @@
         .scroll-container {
             flex: 1;
             overflow-y: auto;
-            padding: 1.2rem;
+            padding: 1.5rem;
             display: flex;
             flex-direction: column;
         }
@@ -117,7 +117,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 1.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
             color: white;
             font-size: 2.2rem;
             text-shadow: 2px 2px 0 black;
@@ -129,10 +129,10 @@
         .lvl-5 { background-color: var(--red-500); }
 
         .token-btn {
-            padding: 0.8rem 1.2rem;
-            font-size: 2.4rem;
+            padding: 1rem 1.6rem;
+            font-size: 2.6rem;
             border-radius: 12px;
-            margin: 0.25rem;
+            margin: 0.3rem;
         }
         .token-btn.num { background-color: var(--cyan-500); color: white; border-color: var(--cyan-600); }
         .token-btn.op { background-color: var(--orange-500); color: white; border-color: var(--stone-800); }
@@ -156,36 +156,36 @@
 
         .hero { position: absolute; bottom: 3.5rem; left: 15%; transition: all 0.3s; z-index: 5; }
         .monster { position: absolute; bottom: 3.5rem; right: 15%; transition: all 0.3s; z-index: 5; }
-        .hero-body { width: 4rem; height: 5rem; background: var(--cyan-600); border: 4px solid black; position: relative; }
-        .hero-head { width: 2.8rem; height: 2.8rem; background: #e0aa89; border: 4px solid black; position: absolute; top: -2.6rem; left: 0.6rem; }
-        .monster-body { width: 5.5rem; height: 7.5rem; background: var(--magenta); border: 4px solid black; position: relative; }
-        .character-eye { width: 9px; height: 9px; background: black; position: absolute; top: 10px; border-radius: 50%; }
+        .hero-body { width: 4.5rem; height: 5.5rem; background: var(--cyan-600); border: 4px solid black; position: relative; }
+        .hero-head { width: 3rem; height: 3rem; background: #e0aa89; border: 4px solid black; position: absolute; top: -2.8rem; left: 0.7rem; }
+        .monster-body { width: 6.5rem; height: 8.5rem; background: var(--magenta); border: 4px solid black; position: relative; }
+        .character-eye { width: 10px; height: 10px; background: black; position: absolute; top: 10px; border-radius: 50%; }
 
-        .hero.attack { transform: translateX(150px); }
+        .hero.attack { transform: translateX(200px); }
         .slash-effect {
             position: absolute; top: 30%; right: 20%;
-            width: 80px; height: 25px; background: white;
+            width: 100px; height: 30px; background: white;
             animation: slash 0.3s forwards; pointer-events: none;
         }
 
-        .bar-container { width: 11rem; height: 1.8rem; background: var(--stone-300); border: 4px solid black; position: relative; }
+        .bar-container { width: 12rem; height: 2rem; background: var(--stone-300); border: 4px solid black; position: relative; }
         .bar-fill { height: 100%; transition: width 0.4s ease; }
 
         .game-input {
-            width: 9rem; font-size: 3rem; text-align: center; border: 6px solid black; font-family: inherit; font-weight: bold;
+            width: 10rem; font-size: 3.5rem; text-align: center; border: 6px solid black; font-family: inherit; font-weight: bold;
         }
 
         /* --- WORKING SCREEN HIGHLIGHTS --- */
         .working-line {
-            font-size: 2.2rem;
-            margin: 0.5rem 0;
+            font-size: 2.4rem;
+            margin: 0.6rem 0;
             display: block;
             letter-spacing: 1px;
             white-space: nowrap;
         }
         .step-highlight {
             border: 2px solid var(--stone-800);
-            padding: 0 5px;
+            padding: 0 6px;
             border-radius: 4px;
             color: var(--stone-900);
         }
@@ -204,7 +204,6 @@
           { id: 5, name: "The End Dimension", desc: "Expert Mode", rules: ['+', '-', '*', '/'], brackets: true, length: 5 },
         ];
 
-        // Step colors: Yellow, Blue, Green, Pink, Amber
         const STEP_COLORS = ['#fef08a', '#bae6fd', '#bbf7d0', '#fbcfe8', '#ffedd5'];
 
         const state = {
@@ -229,9 +228,9 @@
         let musicInterval = null;
 
         const ICONS = {
-            chevron: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>`,
-            speaker: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`,
-            speakerOff: `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`,
+            chevron: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>`,
+            speaker: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`,
+            speakerOff: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`,
         };
 
         const safeEval = (a, op, b) => {
@@ -385,10 +384,10 @@
             const levelsHtml = LEVELS.map((lvl) => `
                 <button class="btn btn-level lvl-${lvl.id}" onclick="startGame(${lvl.id})">
                     <div class="flex items-center gap-6">
-                        <div class="pixel-card" style="width: 4rem; height: 4rem; display: flex; align-items: center; justify-content:center; background: white; color: black; font-size: 2.2rem;">${lvl.id}</div>
+                        <div class="pixel-card" style="width: 4.5rem; height: 4.5rem; display: flex; align-items: center; justify-content:center; background: white; color: black; font-size: 2.5rem;">${lvl.id}</div>
                         <div style="text-align: left;">
-                            <h3 style="margin:0; font-size: 1.8rem;">${lvl.name}</h3>
-                            <p style="margin:0; font-size: 1.1rem; opacity: 0.9;">${lvl.desc}</p>
+                            <h3 style="margin:0; font-size: 2.2rem;">${lvl.name}</h3>
+                            <p style="margin:0; font-size: 1.3rem; opacity: 0.9;">${lvl.desc}</p>
                         </div>
                     </div>
                     <div>${ICONS.chevron}</div>
@@ -397,9 +396,9 @@
 
             app.innerHTML = `
                 <div class="scroll-container">
-                    <div class="pixel-card p-6 mb-8 text-center w-full" style="background: linear-gradient(45deg, var(--green-200), var(--white));">
-                        <h1 style="font-size: 3.5rem; color: var(--green-600); margin:0; text-shadow: 2px 2px 0 white;">MATH QUEST</h1>
-                        <p style="font-size: 1.5rem; color: var(--stone-600); font-weight: bold;">Follow Order of Operations to Defeat the Monster!</p>
+                    <div class="pixel-card p-8 mb-8 text-center w-full" style="background: linear-gradient(45deg, var(--green-200), var(--white));">
+                        <h1 style="font-size: 4.5rem; color: var(--green-600); margin:0; text-shadow: 2px 2px 0 white;">MATH QUEST</h1>
+                        <p style="font-size: 1.8rem; color: var(--stone-600); font-weight: bold;">Follow Order of Operations to Defeat the Monster!</p>
                     </div>
                     <div class="flex flex-col w-full">${levelsHtml}</div>
                 </div>
@@ -410,15 +409,15 @@
             const getDisplayOp = (op) => op === '*' ? '×' : op === '/' ? '÷' : op;
 
             let headerHtml = `
-                <div class="flex justify-between items-center p-4 pixel-card" style="background: rgba(255,255,255,0.9); border-bottom-width: 6px; border-radius:0; z-index: 20;">
-                    <button onclick="toggleMusic()" class="btn" style="padding: 0.5rem; width: 3.5rem; height: 3.5rem; display:flex; align-items:center; justify-content:center;">
+                <div class="flex justify-between items-center p-6 pixel-card" style="background: rgba(255,255,255,0.9); border-bottom-width: 6px; border-radius:0; z-index: 20;">
+                    <button onclick="toggleMusic()" class="btn" style="padding: 0.5rem; width: 4rem; height: 4rem; display:flex; align-items:center; justify-content:center;">
                         ${state.isMusicOn ? ICONS.speaker : ICONS.speakerOff}
                     </button>
                     <div class="flex flex-col items-center">
-                        <div style="font-weight:bold; font-size: 1.5rem;">LVL ${state.currentLevel}</div>
-                        <div style="font-weight:bold; font-size: 1.2rem; color: var(--stone-500);">Q:${state.questionCount}/10</div>
+                        <div style="font-weight:bold; font-size: 2rem;">LEVEL ${state.currentLevel}</div>
+                        <div style="font-weight:bold; font-size: 1.5rem; color: var(--stone-500);">Q:${state.questionCount}/10</div>
                     </div>
-                    <button onclick="exitGame()" class="btn" style="padding: 0.4rem 1.2rem; font-size: 1.4rem; height: 3.5rem; background: var(--red-500); color:white;">EXIT</button>
+                    <button onclick="exitGame()" class="btn" style="padding: 0.4rem 1.8rem; font-size: 1.8rem; height: 4rem; background: var(--red-500); color:white;">EXIT</button>
                 </div>
             `;
 
@@ -426,15 +425,15 @@
                 <div class="arena">
                     <div class="ground"></div>
                     <div class="hero animate-float ${state.heroAction === 'attack' ? 'attack' : ''}">
-                        <div class="hero-head"><div class="character-eye animate-blink" style="left:7px;"></div><div class="character-eye animate-blink" style="right:12px;"></div></div>
+                        <div class="hero-head"><div class="character-eye animate-blink" style="left:8px;"></div><div class="character-eye animate-blink" style="right:12px;"></div></div>
                         <div class="hero-body"></div>
                     </div>
                     <div class="monster animate-float ${state.shake ? 'animate-damage' : ''}">
-                        <div class="monster-body"><div class="character-eye animate-blink" style="left:12px;"></div><div class="character-eye animate-blink" style="right:12px;"></div></div>
+                        <div class="monster-body"><div class="character-eye animate-blink" style="left:15px;"></div><div class="character-eye animate-blink" style="right:15px;"></div></div>
                     </div>
                     ${state.heroAction === 'attack' ? `<div class="slash-effect"></div>` : ''}
-                    <div style="position: absolute; top: 15px; left: 70px;"><div class="bar-container"><div class="bar-fill" style="background: var(--green-500); width: 100%;"></div></div></div>
-                    <div style="position: absolute; top: 15px; right: 70px;"><div class="bar-container"><div class="bar-fill" style="background: var(--red-500); width: ${((20 - state.monsterHP)/20)*100}%;"></div></div></div>
+                    <div style="position: absolute; top: 15px; left: 80px;"><div class="bar-container"><div class="bar-fill" style="background: var(--green-500); width: 100%;"></div></div></div>
+                    <div style="position: absolute; top: 15px; right: 80px;"><div class="bar-container"><div class="bar-fill" style="background: var(--red-500); width: ${((20 - state.monsterHP)/20)*100}%;"></div></div></div>
                 </div>
             `;
 
@@ -444,11 +443,8 @@
                 state.history.forEach((h, i) => {
                     const lineContent = h.snapshot.map(t => {
                         let bgColor = 'transparent';
-                        // Part of current operation?
                         if (h.highlightIds.includes(t.id)) bgColor = STEP_COLORS[i % STEP_COLORS.length];
-                        // Part of the previous step's result?
                         if (i > 0 && t.id === state.history[i-1].resultId) bgColor = STEP_COLORS[(i-1) % STEP_COLORS.length];
-
                         const displayVal = t.type === 'op' ? getDisplayOp(t.value) : t.value;
                         return bgColor !== 'transparent' ? `<span class="step-highlight" style="background-color:${bgColor}">${displayVal}</span>` : displayVal;
                     }).join(' ');
@@ -460,42 +456,41 @@
 
                 contentHtml = `
                     <div class="text-center">
-                        <h2 style="font-size: 2.2rem; color: var(--green-600); margin-top:0;">CORRECT!</h2>
-                        <div class="pixel-card p-4 mb-6" style="background: var(--stone-100); text-align: left; display: inline-block; min-width: 85%; border-color: var(--green-600);">
+                        <h2 style="font-size: 3rem; color: var(--green-600); margin-top:0;">CORRECT!</h2>
+                        <div class="pixel-card p-6 mb-8" style="background: var(--stone-100); text-align: left; display: inline-block; min-width: 80%; border-color: var(--green-600);">
                             ${workLines.join('')}
                         </div>
-                        <button onclick="proceedToNextQuestion()" class="btn" style="padding: 1rem 2.5rem; background: var(--green-500); color: white; font-size: 2.2rem;">NEXT QUESTION</button>
+                        <br>
+                        <button onclick="proceedToNextQuestion()" class="btn" style="padding: 1.2rem 3rem; background: var(--green-500); color: white; font-size: 2.5rem;">NEXT QUESTION</button>
                     </div>
                 `;
             } else if (state.gameState === 'victory' || state.gameState === 'gameover') {
                 contentHtml = `
-                    <div class="text-center py-6 pixel-card" style="background: ${state.gameState === 'victory' ? 'var(--yellow-100)' : 'var(--red-100)'}">
-                        <h2 style="font-size: 3.5rem; margin:0;">${state.gameState === 'victory' ? 'VICTORY!' : 'DEFEAT!'}</h2>
-                        <p style="font-size: 1.8rem;">Score: ${state.monsterHP}</p>
-                        <button onclick="exitGame()" class="btn" style="padding: 0.8rem 2rem; font-size: 1.5rem; background: white;">RETURN TO MENU</button>
+                    <div class="text-center py-10 pixel-card" style="background: ${state.gameState === 'victory' ? 'var(--yellow-100)' : 'var(--red-100)'}">
+                        <h2 style="font-size: 5rem; margin:0;">${state.gameState === 'victory' ? 'VICTORY!' : 'DEFEAT!'}</h2>
+                        <p style="font-size: 2.5rem;">Score: ${state.monsterHP}</p>
+                        <button onclick="exitGame()" class="btn" style="padding: 1rem 3rem; font-size: 2rem; background: white;">RETURN TO MENU</button>
                     </div>
                 `;
             } else {
-                const isError = state.feedback.toLowerCase().includes('mistake') || 
-                                state.feedback.toLowerCase().includes('wrong') || 
-                                state.feedback.toLowerCase().includes('error');
+                const isError = state.feedback.toLowerCase().includes('mistake') || state.feedback.toLowerCase().includes('wrong') || state.feedback.toLowerCase().includes('error');
                 const feedbackColor = isError ? 'var(--red-ink)' : 'var(--blue-700)';
 
                 let tokensHtml = state.tokens.map((t, idx) => {
-                    if (t.type === 'bracket') return `<div style="font-size: 3.2rem; color: var(--orange-500); padding: 0 0.5rem; font-weight: bold;">${t.value}</div>`;
+                    if (t.type === 'bracket') return `<div style="font-size: 4rem; color: var(--orange-500); padding: 0 1rem; font-weight: bold;">${t.value}</div>`;
                     return `<button onclick="handleTokenClick(${idx})" class="btn token-btn ${t.type} ${state.selectedIndices.includes(idx) ? 'selected-' + t.type : ''}">${t.type === 'op' ? getDisplayOp(t.value) : t.value}</button>`;
                 }).join('');
 
                 contentHtml = `
-                    <div class="mb-4 p-4 text-center pixel-card" style="font-size: 1.6rem; border-color: ${feedbackColor}; color: ${feedbackColor};">${state.feedback}</div>
-                    <div class="flex items-center justify-center flex-wrap gap-1 p-4 pixel-card" style="background: var(--stone-100);">${tokensHtml}</div>
+                    <div class="mb-6 p-6 text-center pixel-card" style="font-size: 2rem; border-color: ${feedbackColor}; color: ${feedbackColor};">${state.feedback}</div>
+                    <div class="flex items-center justify-center flex-wrap gap-1 p-6 pixel-card" style="background: var(--stone-100);">${tokensHtml}</div>
                     ${state.selectedStep ? `
-                        <div class="pixel-card p-4 mt-6 text-center" style="background: var(--stone-800); color: white;">
-                            <div class="mb-2" style="font-size: 2rem; color: var(--yellow-300);">${state.selectedStep.left.value} ${getDisplayOp(state.selectedStep.op.value)} ${state.selectedStep.right.value} = ?</div>
-                            <form onsubmit="handleInputSubmit(event)" class="flex justify-center gap-4">
+                        <div class="pixel-card p-6 mt-8 text-center" style="background: var(--stone-800); color: white;">
+                            <div class="mb-4" style="font-size: 3rem; color: var(--yellow-300);">${state.selectedStep.left.value} ${getDisplayOp(state.selectedStep.op.value)} ${state.selectedStep.right.value} = ?</div>
+                            <form onsubmit="handleInputSubmit(event)" class="flex justify-center gap-6">
                                 <input id="gameInput" type="number" class="game-input" oninput="state.inputValue = this.value">
-                                <button type="submit" class="btn" style="background: var(--green-500); color: white; font-size: 1.6rem; padding: 0 1.5rem;">STRIKE</button>
-                                <button type="button" onclick="cancelStep()" class="btn" style="background: var(--red-500); color: white; font-size: 1.6rem; padding: 0 1rem;">X</button>
+                                <button type="submit" class="btn" style="background: var(--green-500); color: white; font-size: 2.2rem; padding: 0 2rem;">STRIKE</button>
+                                <button type="button" onclick="cancelStep()" class="btn" style="background: var(--red-500); color: white; font-size: 2.2rem; padding: 0 1.5rem;">X</button>
                             </form>
                         </div>
                     ` : ''}
