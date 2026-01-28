@@ -21,6 +21,7 @@
             --red-500: #ef4444;
             --blue-700: #1d4ed8;
             --purple-600: #9333ea;
+            --purple-900: #581c87;
             --cyan-500: #06b6d4;
             --white: #ffffff;
             --magenta: #ff00ff;
@@ -39,13 +40,11 @@
             justify-content: center;
             user-select: none;
             overflow: hidden;
-            /* Proportional base sizing */
             font-size: calc(12px + 0.5vmin); 
         }
 
         * { box-sizing: border-box; }
 
-        /* --- FLUID & PROPORTIONAL APP CONTAINER --- */
         #app {
             width: 98vw;
             max-width: 1400px;
@@ -56,7 +55,7 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            overflow-y: auto; /* Internal scrolling for varying devices */
+            overflow-y: auto;
             border-radius: 1.5vmin;
             background-size: cover;
             background-position: center;
@@ -127,7 +126,7 @@
 
         .token-btn {
             padding: 1.5vmin 2.5vmin;
-            font-size: 5vmin; /* Scales with screen size */
+            font-size: 5vmin;
             border-radius: 1vmin;
             margin: 0.5vmin;
         }
@@ -153,7 +152,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 20vmin; /* Scales with height and width */
+            width: 20vmin;
         }
         .hero-pos { left: 10%; }
         .monster-pos { right: 10%; }
@@ -220,7 +219,7 @@
           { id: 2, name: "The Sandy Dunes", desc: "Multiplication & Division", rules: ['*', '/'], length: 4 },
           { id: 3, name: "The Stone Keep", desc: "Mixed Operations", rules: ['+', '-', '*', '/'], length: 4 },
           { id: 4, name: "The Nether Fortress", desc: "Brackets & Mixed", rules: ['+', '-', '*', '/'], brackets: true, length: 4 },
-          { id: 5, name: "The End Dimension", desc: "Expert Mode", rules: ['+', '-', '*', '/'], brackets: true, length: 5 },
+          { id: 5, name: "The End Dimension", desc: "Expert Mode (5-6 Numbers, 2 Brackets)", rules: ['+', '-', '*', '/'], brackets: true },
         ];
 
         const STEP_COLORS = ['#fef08a', '#bae6fd', '#bbf7d0', '#fbcfe8', '#ffedd5'];
@@ -264,32 +263,59 @@
             const level = LEVELS.find(l => l.id === levelId);
             const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
             let attempts = 0;
-            while (attempts < 3000) {
+            
+            while (attempts < 4000) {
                 attempts++;
-                let nums = Array.from({ length: level.length }, () => getRandomInt(1, 15));
-                let ops = Array.from({ length: level.length - 1 }, () => level.rules[getRandomInt(0, level.rules.length - 1)]);
                 let tokens = [];
-                if (!level.brackets) {
-                    for (let i = 0; i < nums.length; i++) {
-                        tokens.push({ type: 'num', value: nums[i], id: `n-${Math.random()}` });
-                        if (i < ops.length) tokens.push({ type: 'op', value: ops[i], id: `o-${Math.random()}` });
+                const tNum = (v) => ({ type: 'num', value: v, id: `n-${Math.random()}` });
+                const tOp = () => ({ type: 'op', value: level.rules[getRandomInt(0, level.rules.length - 1)], id: `o-${Math.random()}` });
+                const tBra = (v) => ({ type: 'bracket', value: v, id: `b-${Math.random()}` });
+
+                if (levelId < 4) {
+                    for (let i = 0; i < level.length; i++) {
+                        tokens.push(tNum(getRandomInt(1, 15)));
+                        if (i < level.length - 1) tokens.push(tOp());
                     }
-                } else {
-                    const pattern = getRandomInt(0, 3);
-                    const tNum = (i) => ({ type: 'num', value: nums[i], id: `n-${Math.random()}` });
-                    const tOp = (i) => ({ type: 'op', value: ops[i], id: `o-${Math.random()}` });
-                    const tBra = (v) => ({ type: 'bracket', value: v, id: `b-${Math.random()}` });
-                    if (level.length === 4) {
-                        if (pattern === 0) tokens = [tBra('('), tNum(0), tOp(0), tNum(1), tBra(')'), tOp(1), tNum(2), tOp(2), tNum(3)];
-                        else if (pattern === 1) tokens = [tNum(0), tOp(0), tBra('('), tNum(1), tOp(1), tNum(2), tBra(')'), tOp(2), tNum(3)];
-                        else if (pattern === 2) tokens = [tNum(0), tOp(0), tNum(1), tOp(1), tBra('('), tNum(2), tOp(2), tNum(3), tBra(')')];
-                        else tokens = [tBra('('), tNum(0), tOp(0), tNum(1), tBra(')'), tOp(1), tBra('('), tNum(2), tOp(2), tNum(3), tBra(')')];
-                    } else {
-                        tokens = [tNum(0), tOp(0), tBra('('), tNum(1), tOp(1), tNum(2), tBra(')'), tOp(2), tNum(3), tOp(3), tNum(4)];
+                } else if (levelId === 4) {
+                    const nums = [getRandomInt(1, 12), getRandomInt(1, 12), getRandomInt(1, 12), getRandomInt(1, 12)];
+                    const pattern = getRandomInt(0, 2);
+                    if (pattern === 0) tokens = [tBra('('), tNum(nums[0]), tOp(), tNum(nums[1]), tBra(')'), tOp(), tNum(nums[2]), tOp(), tNum(nums[3])];
+                    else if (pattern === 1) tokens = [tNum(nums[0]), tOp(), tBra('('), tNum(nums[1]), tOp(), tNum(nums[2]), tBra(')'), tOp(), tNum(nums[3])];
+                    else tokens = [tNum(nums[0]), tOp(), tNum(nums[1]), tOp(), tBra('('), tNum(nums[2]), tOp(), tNum(nums[3]), tBra(')')];
+                } else if (levelId === 5) {
+                    // Level 5: 5 or 6 numbers, 1 or 2 brackets, 1 or 2 ops per bracket
+                    const numCount = getRandomInt(5, 6);
+                    const bracketCount = getRandomInt(1, 2);
+                    const nums = Array.from({ length: numCount }, () => getRandomInt(1, 12));
+
+                    if (numCount === 5) {
+                        if (bracketCount === 1) {
+                            // (n op n op n) op n op n
+                            tokens = [tBra('('), tNum(nums[0]), tOp(), tNum(nums[1]), tOp(), tNum(nums[2]), tBra(')'), tOp(), tNum(nums[3]), tOp(), tNum(nums[4])];
+                        } else {
+                            // (n op n) op (n op n) op n
+                            tokens = [tBra('('), tNum(nums[0]), tOp(), tNum(nums[1]), tBra(')'), tOp(), tBra('('), tNum(nums[2]), tOp(), tNum(nums[3]), tBra(')'), tOp(), tNum(nums[4])];
+                        }
+                    } else { // 6 numbers
+                        if (bracketCount === 1) {
+                            // n op (n op n op n) op n op n
+                            tokens = [tNum(nums[0]), tOp(), tBra('('), tNum(nums[1]), tOp(), tNum(nums[2]), tOp(), tNum(nums[3]), tBra(')'), tOp(), tNum(nums[4]), tOp(), tNum(nums[5])];
+                        } else {
+                            const innerPattern = getRandomInt(0, 1);
+                            if (innerPattern === 0) {
+                                // (n op n op n) op (n op n) op n
+                                tokens = [tBra('('), tNum(nums[0]), tOp(), tNum(nums[1]), tOp(), tNum(nums[2]), tBra(')'), tOp(), tBra('('), tNum(nums[3]), tOp(), tNum(nums[4]), tBra(')'), tOp(), tNum(nums[5])];
+                            } else {
+                                // (n op n) op n op (n op n op n)
+                                tokens = [tBra('('), tNum(nums[0]), tOp(), tNum(nums[1]), tBra(')'), tOp(), tNum(nums[2]), tOp(), tBra('('), tNum(nums[3]), tOp(), tNum(nums[4]), tOp(), tNum(nums[5]), tBra(')')];
+                            }
+                        }
                     }
                 }
+
                 if (isValidEquation(tokens)) return tokens;
             }
+            return [{type:'num', value:10, id:'f1'}, {type:'op', value:'+', id:'f2'}, {type:'num', value:5, id:'f3'}];
         };
 
         const isValidEquation = (initialTokens) => {
@@ -301,7 +327,7 @@
                 const val = safeEval(move.left.value, move.op.value, move.right.value);
                 if (move.op.value === '/' && move.left.value % move.right.value !== 0) return false;
                 if (move.op.value === '-' && val <= 0) return false;
-                if (!Number.isInteger(val) || val <= 0 || val > 300) return false;
+                if (!Number.isInteger(val) || val <= 0 || val > 1000) return false;
                 const newTokens = [];
                 for (let i = 0; i < tokens.length; i++) {
                     if (tokens[i].id === move.left.id) {
@@ -499,7 +525,7 @@
                 const feedbackColor = isError ? 'var(--red-ink)' : 'var(--blue-700)';
 
                 let tokensHtml = state.tokens.map((t, idx) => {
-                    if (t.type === 'bracket') return `<div style="font-size: 10vmin; color: var(--orange-500); padding: 0 1vmin; font-weight: bold;">${t.value}</div>`;
+                    if (t.type === 'bracket') return `<div style="font-size: clamp(2rem, 8vmin, 6rem); color: var(--orange-500); padding: 0 0.5vmin; font-weight: bold;">${t.value}</div>`;
                     return `<button onclick="handleTokenClick(${idx})" class="btn token-btn ${t.type} ${state.selectedIndices.includes(idx) ? 'selected-' + t.type : ''}">${t.type === 'op' ? getDisplayOp(t.value) : t.value}</button>`;
                 }).join('');
 
