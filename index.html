@@ -51,11 +51,11 @@
 
         * { box-sizing: border-box; }
 
-        /* --- FIXED 3:4 RATIO CONTAINER (Expanded slightly) --- */
+        /* --- FIXED 3:4 RATIO CONTAINER (Slightly Expanded) --- */
         #app {
             width: 95vw;
-            max-width: 700px; /* Expanded Width from 600px */
-            height: calc(min(95vw, 700px) * 4 / 3); 
+            max-width: 750px; /* Expanded Width */
+            height: calc(min(95vw, 750px) * 4 / 3); 
             max-height: 98vh;
             background-color: var(--sky-300);
             border: 8px solid var(--stone-800);
@@ -63,14 +63,14 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            overflow: hidden; /* Scroll handled internally */
+            overflow: hidden;
             border-radius: 12px;
         }
 
         .scroll-container {
             flex: 1;
             overflow-y: auto;
-            padding: 1.5rem;
+            padding: 1.2rem;
             display: flex;
             flex-direction: column;
         }
@@ -81,7 +81,6 @@
         .items-center { align-items: center; }
         .justify-center { justify-content: center; }
         .justify-between { justify-content: space-between; }
-        .w-full { width: 100%; }
         .pixel-card { 
             box-shadow: 8px 8px 0px 0px rgba(0,0,0,0.4); 
             border: 5px solid var(--stone-800); 
@@ -118,9 +117,9 @@
             align-items: center;
             justify-content: space-between;
             padding: 1.5rem;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1rem;
             color: white;
-            font-size: 2rem;
+            font-size: 2.2rem;
             text-shadow: 2px 2px 0 black;
         }
         .lvl-1 { background-color: var(--green-500); }
@@ -130,19 +129,14 @@
         .lvl-5 { background-color: var(--red-500); }
 
         .token-btn {
-            padding: 1rem 1.5rem;
-            font-size: 2.5rem;
+            padding: 0.8rem 1.2rem;
+            font-size: 2.4rem;
             border-radius: 12px;
-            margin: 0.3rem;
+            margin: 0.25rem;
         }
         .token-btn.num { background-color: var(--cyan-500); color: white; border-color: var(--cyan-600); }
         .token-btn.op { background-color: var(--orange-500); color: white; border-color: var(--stone-800); }
-        .token-btn.selected-num, .token-btn.selected-op { 
-            background-color: var(--yellow-300); 
-            color: var(--stone-900); 
-            transform: scale(1.1); 
-            border-color: var(--stone-900); 
-        }
+        .token-btn.selected-num, .token-btn.selected-op { background-color: var(--yellow-300); color: var(--stone-900); transform: scale(1.1); border-color: var(--stone-900); }
 
         /* --- ARENA --- */
         .arena {
@@ -162,10 +156,9 @@
 
         .hero { position: absolute; bottom: 3.5rem; left: 15%; transition: all 0.3s; z-index: 5; }
         .monster { position: absolute; bottom: 3.5rem; right: 15%; transition: all 0.3s; z-index: 5; }
-        .hero-body { width: 4.5rem; height: 5.5rem; background: var(--cyan-600); border: 4px solid black; position: relative; }
-        .hero-head { width: 3rem; height: 3rem; background: #e0aa89; border: 4px solid black; position: absolute; top: -2.8rem; left: 0.7rem; }
-        .monster-body { width: 6rem; height: 8rem; background: var(--magenta); border: 4px solid black; position: relative; }
-        
+        .hero-body { width: 4rem; height: 5rem; background: var(--cyan-600); border: 4px solid black; position: relative; }
+        .hero-head { width: 2.8rem; height: 2.8rem; background: #e0aa89; border: 4px solid black; position: absolute; top: -2.6rem; left: 0.6rem; }
+        .monster-body { width: 5.5rem; height: 7.5rem; background: var(--magenta); border: 4px solid black; position: relative; }
         .character-eye { width: 9px; height: 9px; background: black; position: absolute; top: 10px; border-radius: 50%; }
 
         .hero.attack { transform: translateX(150px); }
@@ -182,6 +175,7 @@
             width: 9rem; font-size: 3rem; text-align: center; border: 6px solid black; font-family: inherit; font-weight: bold;
         }
 
+        /* --- WORKING SCREEN HIGHLIGHTS --- */
         .working-line {
             font-size: 2.2rem;
             margin: 0.5rem 0;
@@ -189,11 +183,11 @@
             letter-spacing: 1px;
             white-space: nowrap;
         }
-        .highlight-part {
-            background-color: var(--yellow-300);
+        .step-highlight {
             border: 2px solid var(--stone-800);
-            padding: 0 4px;
+            padding: 0 5px;
             border-radius: 4px;
+            color: var(--stone-900);
         }
     </style>
 </head>
@@ -209,6 +203,9 @@
           { id: 4, name: "The Nether Fortress", desc: "Brackets & Mixed", rules: ['+', '-', '*', '/'], brackets: true, length: 4 },
           { id: 5, name: "The End Dimension", desc: "Expert Mode", rules: ['+', '-', '*', '/'], brackets: true, length: 5 },
         ];
+
+        // Step colors: Yellow, Blue, Green, Pink, Amber
+        const STEP_COLORS = ['#fef08a', '#bae6fd', '#bbf7d0', '#fbcfe8', '#ffedd5'];
 
         const state = {
             screen: 'menu',
@@ -417,15 +414,11 @@
                     <button onclick="toggleMusic()" class="btn" style="padding: 0.5rem; width: 3.5rem; height: 3.5rem; display:flex; align-items:center; justify-content:center;">
                         ${state.isMusicOn ? ICONS.speaker : ICONS.speakerOff}
                     </button>
-                    
                     <div class="flex flex-col items-center">
                         <div style="font-weight:bold; font-size: 1.5rem;">LVL ${state.currentLevel}</div>
                         <div style="font-weight:bold; font-size: 1.2rem; color: var(--stone-500);">Q:${state.questionCount}/10</div>
                     </div>
-
-                    <button onclick="exitGame()" class="btn" style="padding: 0.4rem 1.2rem; font-size: 1.4rem; height: 3.5rem; background: var(--red-500); color:white;">
-                        EXIT
-                    </button>
+                    <button onclick="exitGame()" class="btn" style="padding: 0.4rem 1.2rem; font-size: 1.4rem; height: 3.5rem; background: var(--red-500); color:white;">EXIT</button>
                 </div>
             `;
 
@@ -433,56 +426,53 @@
                 <div class="arena">
                     <div class="ground"></div>
                     <div class="hero animate-float ${state.heroAction === 'attack' ? 'attack' : ''}">
-                        <div class="hero-head">
-                            <div class="character-eye animate-blink" style="left:7px;"></div>
-                            <div class="character-eye animate-blink" style="right:12px;"></div>
-                        </div>
+                        <div class="hero-head"><div class="character-eye animate-blink" style="left:7px;"></div><div class="character-eye animate-blink" style="right:12px;"></div></div>
                         <div class="hero-body"></div>
                     </div>
                     <div class="monster animate-float ${state.shake ? 'animate-damage' : ''}">
-                        <div class="monster-body">
-                            <div class="character-eye animate-blink" style="left:12px;"></div>
-                            <div class="character-eye animate-blink" style="right:12px;"></div>
-                        </div>
+                        <div class="monster-body"><div class="character-eye animate-blink" style="left:12px;"></div><div class="character-eye animate-blink" style="right:12px;"></div></div>
                     </div>
                     ${state.heroAction === 'attack' ? `<div class="slash-effect"></div>` : ''}
-                    <div style="position: absolute; top: 15px; left: 70px;">
-                        <div class="bar-container"><div class="bar-fill" style="background: var(--green-500); width: 100%;"></div></div>
-                    </div>
-                    <div style="position: absolute; top: 15px; right: 70px;">
-                        <div class="bar-container"><div class="bar-fill" style="background: var(--red-500); width: ${((20 - state.monsterHP)/20)*100}%;"></div></div>
-                    </div>
+                    <div style="position: absolute; top: 15px; left: 70px;"><div class="bar-container"><div class="bar-fill" style="background: var(--green-500); width: 100%;"></div></div></div>
+                    <div style="position: absolute; top: 15px; right: 70px;"><div class="bar-container"><div class="bar-fill" style="background: var(--red-500); width: ${((20 - state.monsterHP)/20)*100}%;"></div></div></div>
                 </div>
             `;
 
             let contentHtml = '';
             if (state.gameState === 'delay') {
-                const lines = state.history.map((h, i) => {
+                const workLines = [];
+                state.history.forEach((h, i) => {
                     const lineContent = h.snapshot.map(t => {
-                        const isPart = h.highlightIds && h.highlightIds.includes(t.id);
+                        let bgColor = 'transparent';
+                        // Part of current operation?
+                        if (h.highlightIds.includes(t.id)) bgColor = STEP_COLORS[i % STEP_COLORS.length];
+                        // Part of the previous step's result?
+                        if (i > 0 && t.id === state.history[i-1].resultId) bgColor = STEP_COLORS[(i-1) % STEP_COLORS.length];
+
                         const displayVal = t.type === 'op' ? getDisplayOp(t.value) : t.value;
-                        return isPart ? `<span class="highlight-part">${displayVal}</span>` : displayVal;
+                        return bgColor !== 'transparent' ? `<span class="step-highlight" style="background-color:${bgColor}">${displayVal}</span>` : displayVal;
                     }).join(' ');
-                    return `<span class="working-line">${i === 0 ? '' : '= '}${lineContent}</span>`;
+                    workLines.push(`<span class="working-line">${i === 0 ? '' : '= '}${lineContent}</span>`);
                 });
-                lines.push(`<span class="working-line" style="color: var(--green-600); font-weight: bold;">= ${state.tokens[0].value}</span>`);
+
+                const lastResColor = STEP_COLORS[(state.history.length - 1) % STEP_COLORS.length];
+                workLines.push(`<span class="working-line" style="color: var(--green-600); font-weight: bold;">= <span class="step-highlight" style="background-color:${lastResColor}">${state.tokens[0].value}</span></span>`);
 
                 contentHtml = `
                     <div class="text-center">
                         <h2 style="font-size: 2.2rem; color: var(--green-600); margin-top:0;">CORRECT!</h2>
-                        <div class="pixel-card p-4 mb-6" style="background: var(--stone-100); text-align: left; display: inline-block; min-width: 80%; border-color: var(--green-600);">
-                            ${lines.join('')}
+                        <div class="pixel-card p-4 mb-6" style="background: var(--stone-100); text-align: left; display: inline-block; min-width: 85%; border-color: var(--green-600);">
+                            ${workLines.join('')}
                         </div>
-                        <br>
-                        <button onclick="proceedToNextQuestion()" class="btn" style="padding: 1rem 2.5rem; background: var(--green-500); color: white; font-size: 2rem;">NEXT QUESTION</button>
+                        <button onclick="proceedToNextQuestion()" class="btn" style="padding: 1rem 2.5rem; background: var(--green-500); color: white; font-size: 2.2rem;">NEXT QUESTION</button>
                     </div>
                 `;
             } else if (state.gameState === 'victory' || state.gameState === 'gameover') {
                 contentHtml = `
                     <div class="text-center py-6 pixel-card" style="background: ${state.gameState === 'victory' ? 'var(--yellow-100)' : 'var(--red-100)'}">
                         <h2 style="font-size: 3.5rem; margin:0;">${state.gameState === 'victory' ? 'VICTORY!' : 'DEFEAT!'}</h2>
-                        <p style="font-size: 1.8rem;">Final Score: ${state.monsterHP}</p>
-                        <button onclick="exitGame()" class="btn" style="padding: 1rem 2.5rem; font-size: 1.8rem; background: white;">RETURN TO MENU</button>
+                        <p style="font-size: 1.8rem;">Score: ${state.monsterHP}</p>
+                        <button onclick="exitGame()" class="btn" style="padding: 0.8rem 2rem; font-size: 1.5rem; background: white;">RETURN TO MENU</button>
                     </div>
                 `;
             } else {
@@ -492,7 +482,7 @@
                 const feedbackColor = isError ? 'var(--red-ink)' : 'var(--blue-700)';
 
                 let tokensHtml = state.tokens.map((t, idx) => {
-                    if (t.type === 'bracket') return `<div style="font-size: 3.5rem; color: var(--orange-500); padding: 0 0.5rem; font-weight: bold;">${t.value}</div>`;
+                    if (t.type === 'bracket') return `<div style="font-size: 3.2rem; color: var(--orange-500); padding: 0 0.5rem; font-weight: bold;">${t.value}</div>`;
                     return `<button onclick="handleTokenClick(${idx})" class="btn token-btn ${t.type} ${state.selectedIndices.includes(idx) ? 'selected-' + t.type : ''}">${t.type === 'op' ? getDisplayOp(t.value) : t.value}</button>`;
                 }).join('');
 
@@ -512,30 +502,16 @@
                 `;
             }
 
-            app.innerHTML = `
-                ${headerHtml}
-                ${arenaHtml}
-                <div class="scroll-container">
-                    ${contentHtml}
-                </div>
-            `;
+            app.innerHTML = `${headerHtml}${arenaHtml}<div class="scroll-container">${contentHtml}</div>`;
             if (state.selectedStep) document.getElementById('gameInput').focus();
         }
 
-        function startGame(id) { 
-            state.currentLevel = id; state.screen = 'game'; state.monsterHP = 0; state.questionCount = 1; 
-            loadNewQuestion(); render(); 
-        }
-
-        function exitGame() { 
-            state.screen = 'menu'; // RETURNS TO MAIN PAGE
-            stopMusic(); 
-            render(); 
-        }
+        function startGame(id) { state.currentLevel = id; state.screen = 'game'; state.monsterHP = 0; state.questionCount = 1; loadNewQuestion(); render(); }
+        function exitGame() { state.screen = 'menu'; stopMusic(); render(); }
 
         function loadNewQuestion() { 
             state.tokens = generateEquation(state.currentLevel); 
-            state.history = [{ snapshot: JSON.parse(JSON.stringify(state.tokens)) }]; 
+            state.history = []; 
             state.gameState = 'input'; 
             state.feedback = "What is the next operation?"; state.selectedIndices = []; state.selectedStep = null; state.inputValue = '';
         }
@@ -560,7 +536,7 @@
                         else state.feedback = "Mistake: Solve from LEFT to RIGHT!";
                         setTimeout(()=> { state.shake = false; state.selectedIndices = []; render(); }, 1200);
                     }
-                } else { state.selectedIndices = []; }
+                } else state.selectedIndices = [];
             }
             render();
         }
@@ -571,27 +547,24 @@
             if (parseInt(state.inputValue) === correctVal) {
                 document.getElementById('body').classList.add('pulse-screen');
                 state.heroAction = 'attack'; soundEffects.strike();
-                
+                const resId = `r-${Math.random()}`;
                 state.history.push({
                     snapshot: JSON.parse(JSON.stringify(state.tokens)),
-                    highlightIds: [state.selectedStep.left.id, state.selectedStep.op.id, state.selectedStep.right.id]
+                    highlightIds: [state.selectedStep.left.id, state.selectedStep.op.id, state.selectedStep.right.id],
+                    resultId: resId
                 });
-
                 const newTokens = [];
                 for (let i = 0; i < state.tokens.length; i++) {
-                    if (state.tokens[i].id === state.selectedStep.left.id) { newTokens.push({ type: 'num', value: correctVal, id: `r-${Math.random()}` }); i += 2; }
+                    if (state.tokens[i].id === state.selectedStep.left.id) { newTokens.push({ type: 'num', value: correctVal, id: resId }); i += 2; }
                     else newTokens.push(state.tokens[i]);
                 }
-                state.tokens = cleanBrackets(newTokens); 
-                state.selectedStep = null; state.inputValue = '';
-
+                state.tokens = cleanBrackets(newTokens); state.selectedStep = null; state.inputValue = '';
                 setTimeout(() => {
                     document.getElementById('body').classList.remove('pulse-screen');
                     state.heroAction = 'idle';
                     if (state.tokens.length === 1) { 
                         state.monsterHP += 2; 
-                        if (state.questionCount >= 10) state.gameState = state.monsterHP >= 18 ? 'victory' : 'gameover';
-                        else state.gameState = 'delay';
+                        state.gameState = state.questionCount >= 10 ? (state.monsterHP >= 18 ? 'victory' : 'gameover') : 'delay';
                     } else state.feedback = "EXCELLENT! What's next?";
                     render();
                 }, 400);
