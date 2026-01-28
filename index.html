@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Quest</title>
+    <title>Math Quest - Order of Operations</title>
     <style>
-        /* --- CSS VARIABLES (Tailwind Palette) --- */
+        /* --- CSS VARIABLES --- */
         :root {
             --sky-300: #7dd3fc;
             --sky-400: #38bdf8;
@@ -13,43 +13,24 @@
             --green-400: #4ade80;
             --green-500: #22c55e;
             --green-600: #16a34a;
-            --green-700: #15803d;
             --stone-100: #f5f5f4;
             --stone-200: #e7e5e4;
             --stone-300: #d6d3d1;
-            --stone-400: #a8a29e;
-            --stone-500: #78716c;
-            --stone-600: #57534e;
-            --stone-700: #44403c;
             --stone-800: #292524;
             --stone-900: #1c1917;
-            --yellow-50: #fefce8;
-            --yellow-100: #fef9c3;
             --yellow-300: #fde047;
             --yellow-400: #facc15;
-            --yellow-500: #eab308;
-            --yellow-600: #ca8a04;
-            --yellow-800: #854d0e;
-            --red-50: #fef2f2;
-            --red-200: #fecaca;
-            --red-400: #f87171;
-            --red-500: #ef4444;
-            --red-600: #dc2626;
-            --red-700: #b91c1c;
-            --blue-50: #eff6ff;
-            --blue-200: #bfdbfe;
-            --blue-700: #1d4ed8;
-            --blue-800: #1e40af;
-            --purple-400: #c084fc;
-            --purple-900: #581c87;
-            --cyan-600: #0891b2;
             --orange-500: #f97316;
-            --pink-500: #ec4899;
+            --red-ink: #ff0000;
+            --blue-500: #3b82f6;
+            --red-500: #ef4444;
+            --blue-700: #1d4ed8;
+            --purple-600: #9333ea;
+            --cyan-500: #06b6d4;
+            --cyan-600: #0891b2;
             --white: #ffffff;
-            --black: #000000;
         }
 
-        /* --- GLOBAL STYLES --- */
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
         body {
@@ -62,219 +43,142 @@
             display: flex;
             justify-content: center;
             user-select: none;
-            -webkit-user-select: none;
+            overflow-x: hidden;
+            font-size: 1.6rem; /* LARGER BASE FONT */
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
-        /* --- UTILITY CLASSES --- */
+        /* --- UTILITIES --- */
         .hidden { display: none !important; }
         .flex { display: flex; }
         .flex-col { flex-direction: column; }
         .items-center { align-items: center; }
         .justify-center { justify-content: center; }
-        .justify-between { justify-content: space-between; }
-        .gap-1 { gap: 0.25rem; }
-        .gap-2 { gap: 0.5rem; }
-        .gap-3 { gap: 0.75rem; }
-        .gap-4 { gap: 1rem; }
-        .gap-6 { gap: 1.5rem; }
         .w-full { width: 100%; }
-        .max-w-2xl { max-width: 42rem; }
-        .max-w-4xl { max-width: 56rem; }
-        .mb-2 { margin-bottom: 0.5rem; }
-        .mb-4 { margin-bottom: 1rem; }
-        .mb-6 { margin-bottom: 1.5rem; }
-        .mb-8 { margin-bottom: 2rem; }
-        .mt-1 { margin-top: 0.25rem; }
-        .mt-4 { margin-top: 1rem; }
-        .p-4 { padding: 1rem; }
-        .p-6 { padding: 1.5rem; }
-        .p-8 { padding: 2rem; }
-        .pt-12 { padding-top: 3rem; }
-        .text-center { text-align: center; }
-        .relative { position: relative; }
-        .absolute { position: absolute; }
-        .font-bold { font-weight: bold; }
-        .rounded { border-radius: 0.25rem; }
-        .rounded-lg { border-radius: 0.5rem; }
-        .rounded-xl { border-radius: 0.75rem; }
-        
-        /* --- CUSTOM COMPONENTS --- */
-        .pixel-shadow { box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.25); }
         .pixel-card { 
-            box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.4); 
-            border: 4px solid var(--stone-800); 
+            box-shadow: 8px 8px 0px 0px rgba(0,0,0,0.4); 
+            border: 5px solid var(--stone-800); 
+            background: white;
         }
-        
+
+        /* --- ANIMATIONS --- */
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes blink { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+        @keyframes slash { 0% { opacity: 0; transform: rotate(-45deg) scale(0); } 50% { opacity: 1; transform: rotate(-45deg) scale(1.2); } 100% { opacity: 0; transform: rotate(-45deg) scale(1.5); } }
+        @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } }
+        @keyframes screenPulse { 0% { background-color: var(--sky-300); } 50% { background-color: white; } 100% { background-color: var(--sky-300); } }
+
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .animate-blink { animation: blink 4s infinite; }
+        .animate-damage { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        .pulse-screen { animation: screenPulse 0.3s ease-out; }
+
+        /* --- BUTTONS --- */
         .btn {
             cursor: pointer;
-            border: none;
-            outline: none;
+            border: 5px solid var(--stone-800);
             font-family: inherit;
-            transition: transform 0.1s, background-color 0.2s;
+            transition: all 0.1s;
+            background: white;
+            box-shadow: 6px 6px 0px var(--stone-800);
+            font-weight: bold;
         }
-        .btn:active { transform: scale(0.98); }
-        .btn:disabled { cursor: not-allowed; opacity: 0.6; }
+        .btn:active { transform: translate(3px, 3px); box-shadow: 0px 0px 0px; }
 
         .btn-level {
             width: 100%;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background-color: var(--white);
-            border: 4px solid var(--stone-800);
             padding: 1.5rem;
-            position: relative;
+            margin-bottom: 1.25rem;
+            color: white;
+            font-size: 2.2rem;
+            text-shadow: 2px 2px 0 black;
         }
-        .btn-level:hover:not(:disabled) { background-color: var(--yellow-50); }
-        .btn-level.locked { background-color: var(--stone-300); border-color: var(--stone-500); }
+        .lvl-1 { background-color: var(--green-500); }
+        .lvl-2 { background-color: var(--blue-500); }
+        .lvl-3 { background-color: var(--orange-500); }
+        .lvl-4 { background-color: var(--purple-600); }
+        .lvl-5 { background-color: var(--red-500); }
 
-        .level-icon {
-            width: 4rem;
-            height: 4rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.875rem;
-            border: 2px solid var(--stone-800);
-        }
-        
         .token-btn {
-            padding: 1rem 1.25rem;
-            font-size: 1.875rem;
-            font-weight: bold;
-            border-bottom: 4px solid;
-            border-radius: 0.75rem;
-            transition: all 0.1s;
+            padding: 1.2rem 1.8rem;
+            font-size: 2.8rem;
+            border-radius: 12px;
+            margin: 0.5rem;
         }
-        .token-btn.num {
-            background-color: var(--white);
-            color: var(--stone-800);
-            border-color: var(--stone-300);
-        }
-        .token-btn.num:hover { background-color: var(--stone-50); border-color: var(--stone-400); }
-        .token-btn.op {
-            width: 3.5rem;
-            height: 3.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--stone-700);
-            color: var(--white);
-            border-color: var(--stone-900);
-        }
-        .token-btn.op:hover { background-color: var(--stone-600); margin-top: -2px; border-bottom-width: 6px; }
-        
-        /* Selection States */
-        .token-btn.selected-num {
-            background-color: var(--yellow-300);
-            border-color: var(--yellow-600);
-            color: var(--stone-900);
-            transform: scale(1.1);
-            z-index: 10;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-        .token-btn.selected-op {
-            background-color: var(--yellow-500);
-            border-color: var(--yellow-800);
-            transform: scale(1.1);
-            z-index: 10;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        /* COLORFUL BUTTONS */
+        .token-btn.num { background-color: var(--cyan-500); color: white; border-color: var(--cyan-600); }
+        .token-btn.op { background-color: var(--orange-500); color: white; border-color: var(--stone-800); }
+        .token-btn.selected-num, .token-btn.selected-op { 
+            background-color: var(--yellow-300); 
+            color: var(--stone-900); 
+            transform: scale(1.15); 
+            border-color: var(--stone-900); 
         }
 
-        .bar-container {
-            width: 16rem;
-            height: 2rem;
-            background-color: var(--stone-300);
-            border: 4px solid var(--stone-800);
+        /* --- ARENA --- */
+        .arena {
+            height: 20rem;
+            border: 6px solid var(--stone-800);
+            background-color: var(--sky-400);
             position: relative;
-            border-radius: 0.375rem;
             overflow: hidden;
         }
-        .bar-fill {
-            height: 100%;
-            transition: width 0.5s;
+        .ground {
+            position: absolute;
+            bottom: 0; width: 100%; height: 4rem;
+            background-color: var(--green-600);
+            border-top: 5px solid var(--stone-800);
         }
+
+        /* --- SPRITES --- */
+        .hero { position: absolute; bottom: 4rem; left: 15%; transition: all 0.3s; z-index: 5; }
+        .monster { position: absolute; bottom: 4rem; right: 15%; transition: all 0.3s; z-index: 5; }
+        
+        .hero-body { width: 4.5rem; height: 5.5rem; background: var(--cyan-600); border: 4px solid black; position: relative; }
+        .hero-head { width: 3.2rem; height: 3.2rem; background: #e0aa89; border: 4px solid black; position: absolute; top: -3rem; left: 0.6rem; }
+        .monster-body { width: 6.5rem; height: 8.5rem; background: var(--purple-900); border: 4px solid black; position: relative; }
+        .eye { width: 8px; height: 8px; background: black; position: absolute; top: 10px; border-radius: 50%; }
+
+        .hero.attack { transform: translateX(180px); }
+        .slash-effect {
+            position: absolute; top: 30%; right: 20%;
+            width: 90px; height: 25px; background: white;
+            animation: slash 0.3s forwards; pointer-events: none;
+        }
+
+        .bar-container { width: 14rem; height: 2rem; background: var(--stone-300); border: 4px solid black; position: relative; }
+        .bar-fill { height: 100%; transition: width 0.4s ease; }
 
         .game-input {
-            width: 10rem;
-            background-color: var(--white);
-            border: none;
-            border-bottom: 8px solid var(--stone-300);
-            color: var(--stone-900);
-            font-size: 2.25rem;
-            padding: 0.75rem;
-            text-align: center;
-            border-radius: 0.5rem;
-            font-family: inherit;
-            font-weight: bold;
-        }
-        .game-input:focus { outline: none; border-color: var(--green-500); }
-
-        .btn-action {
-            padding: 0.5rem 1.5rem;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--white);
-            border-bottom: 8px solid;
-            border-radius: 0.5rem;
-        }
-        .btn-action:active { border-bottom-width: 0; margin-top: 8px; }
-        .btn-green { background-color: var(--green-500); border-color: var(--green-700); }
-        .btn-green:hover { background-color: var(--green-400); }
-        .btn-red { background-color: var(--red-500); border-color: var(--red-700); }
-        .btn-red:hover { background-color: var(--red-400); }
-
-        /* Animations */
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
-        .animate-damage { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
-        
-        @keyframes fade-in-up {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in-up { animation: fade-in-up 0.3s ease-out forwards; }
-        
-        .animate-bounce { animation: bounce 1s infinite; }
-        @keyframes bounce {
-            0%, 100% { transform: translateY(-50%) translateY(-25%); animation-timing-function: cubic-bezier(0.8,0,1,1); }
-            50% { transform: translateY(-50%) translateY(0); animation-timing-function: cubic-bezier(0,0,0.2,1); }
+            width: 10rem; font-size: 3.5rem; text-align: center; border: 6px solid black; font-family: inherit; font-weight: bold;
         }
 
-        /* Sprite Styles */
-        .hero { position: absolute; bottom: 2rem; left: 5rem; transition: transform 0.3s; }
-        .monster { position: absolute; bottom: 2rem; right: 5rem; transition: transform 0.1s; }
-        
-        .hero.attack { transform: translateX(12rem); }
-        .monster.damage { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
-        
-        .text-shadow-sm { text-shadow: 1px 1px 0px rgba(255,255,255,0.5); }
-        .bg-pattern { background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzj//v37zwjjgzhhYWGMYAIAI8YOAymwF7AAAAAASUVORK5CYII='); }
-
-        .highlight-working {
+        /* --- WORKING SCREEN --- */
+        .working-line {
+            font-size: 2.5rem;
+            margin: 0.6rem 0;
+            display: block;
+            letter-spacing: 2px;
+            white-space: nowrap;
+        }
+        .final-answer-box {
             background-color: var(--yellow-300);
-            border: 2px solid var(--yellow-600);
-            border-radius: 4px;
-            padding: 2px 4px;
-            margin: 0 2px;
-            color: var(--stone-900);
+            font-size: 2.8rem;
+            font-weight: bold;
+            padding: 1rem;
+            margin-top: 1rem;
         }
     </style>
 </head>
-<body>
+<body id="body">
     
-    <div id="app" class="w-full max-w-4xl"></div>
+    <div id="app" class="w-full max-w-4xl p-4"></div>
 
     <script>
-        // --- CONSTANTS ---
         const LEVELS = [
           { id: 1, name: "The Grasslands", desc: "Addition & Subtraction", rules: ['+', '-'], brackets: false, length: 4 },
           { id: 2, name: "The Sandy Dunes", desc: "Multiplication & Division", rules: ['*', '/'], brackets: false, length: 4 },
@@ -283,19 +187,12 @@
           { id: 5, name: "The End Dimension", desc: "Expert Mode", rules: ['+', '-', '*', '/'], brackets: true, length: 5 },
         ];
 
-        const QUESTIONS_PER_LEVEL = 10;
-        const MAX_SCORE_POINTS = 20;
-        const WIN_THRESHOLD = 18;
-        const POINTS_WIN = 2;
-        const POINTS_LOSE = 1;
-
-        // --- STATE MANAGEMENT ---
         const state = {
             screen: 'menu',
-            unlockedLevels: [1, 2, 3, 4, 5], // ALL LEVELS UNLOCKED FOR CODE 4C
+            unlockedLevels: [1, 2, 3, 4, 5], 
             currentLevel: 1,
             tokens: [],
-            history: [],
+            history: [], 
             monsterHP: 0,
             questionCount: 1,
             gameState: 'loading',
@@ -305,71 +202,56 @@
             feedback: '',
             shake: false,
             heroAction: 'idle',
-            delayTimer: 0,
             isMusicOn: false
         };
 
         const audioCtxRef = { current: null };
         let musicInterval = null;
 
-        // --- ICONS (SVG Strings) ---
         const ICONS = {
-            lock: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`,
-            chevron: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>`,
-            sword: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"></path><path d="m13 19 6-6"></path><path d="M16 16l4 4"></path><path d="M19 21l2-2"></path></svg>`,
-            volumeOn: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`,
-            volumeOff: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`,
-            trophy: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-500"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17"></path><path d="M14 14.66V17"></path><path d="M18 2l-7.965 15.965"></path><path d="M6 2l7.965 15.965"></path></svg>`,
-            xCircle: `<svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500"><circle cx="12" cy="12" r="10"></circle><path d="m15 9-6 6"></path><path d="m9 9 6 6"></path></svg>`,
-            check: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><path d="M22 4L12 14.01l-3-3"></path></svg>`
+            chevron: `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>`,
+            volumeOn: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`,
+            volumeOff: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`,
         };
 
-        // --- MATH LOGIC ---
         const safeEval = (a, op, b) => {
-            switch(op) {
-                case '+': return a + b;
-                case '-': return a - b;
-                case '*': return a * b;
-                case '/': return a / b;
-                default: return 0;
-            }
+            if (op === '+') return a + b;
+            if (op === '-') return a - b;
+            if (op === '*') return a * b;
+            if (op === '/') return a / b;
+            return 0;
         };
 
         const generateEquation = (levelId) => {
             const level = LEVELS.find(l => l.id === levelId);
             const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-            
             let attempts = 0;
             while (attempts < 3000) {
                 attempts++;
-                let nums = Array.from({ length: level.length }, () => getRandomInt(1, 12));
+                let nums = Array.from({ length: level.length }, () => getRandomInt(1, 15));
                 let ops = Array.from({ length: level.length - 1 }, () => level.rules[getRandomInt(0, level.rules.length - 1)]);
                 let tokens = [];
-                
                 if (!level.brackets) {
                     for (let i = 0; i < nums.length; i++) {
-                        tokens.push({ type: 'num', value: nums[i], id: `n-${i}-${Math.random()}` });
-                        if (i < ops.length) tokens.push({ type: 'op', value: ops[i], id: `o-${i}-${Math.random()}` });
+                        tokens.push({ type: 'num', value: nums[i], id: `n-${Math.random()}` });
+                        if (i < ops.length) tokens.push({ type: 'op', value: ops[i], id: `o-${Math.random()}` });
                     }
                 } else {
-                    const pattern = getRandomInt(0, level.length === 5 ? 3 : 3);
-                    const tNum = (i) => ({ type: 'num', value: nums[i], id: `n-${i}-${Math.random()}` });
-                    const tOp = (i) => ({ type: 'op', value: ops[i], id: `o-${i}-${Math.random()}` });
-                    const tBra = (v, i) => ({ type: 'bracket', value: v, id: `b-${i}-${Math.random()}` });
-
+                    const pattern = getRandomInt(0, 3);
+                    const tNum = (i) => ({ type: 'num', value: nums[i], id: `n-${Math.random()}` });
+                    const tOp = (i) => ({ type: 'op', value: ops[i], id: `o-${Math.random()}` });
+                    const tBra = (v) => ({ type: 'bracket', value: v, id: `b-${Math.random()}` });
                     if (level.length === 4) {
-                        if (pattern === 0) tokens = [tBra('(',0), tNum(0), tOp(0), tNum(1), tBra(')',1), tOp(1), tNum(2), tOp(2), tNum(3)];
-                        else if (pattern === 1) tokens = [tNum(0), tOp(0), tBra('(',0), tNum(1), tOp(1), tNum(2), tBra(')',1), tOp(2), tNum(3)];
-                        else if (pattern === 2) tokens = [tNum(0), tOp(0), tNum(1), tOp(1), tBra('(',0), tNum(2), tOp(2), tNum(3), tBra(')',1)];
-                        else tokens = [tBra('(',0), tNum(0), tOp(0), tNum(1), tBra(')',1), tOp(1), tBra('(',2), tNum(2), tOp(2), tNum(3), tBra(')',3)];
+                        if (pattern === 0) tokens = [tBra('('), tNum(0), tOp(0), tNum(1), tBra(')'), tOp(1), tNum(2), tOp(2), tNum(3)];
+                        else if (pattern === 1) tokens = [tNum(0), tOp(0), tBra('('), tNum(1), tOp(1), tNum(2), tBra(')'), tOp(2), tNum(3)];
+                        else if (pattern === 2) tokens = [tNum(0), tOp(0), tNum(1), tOp(1), tBra('('), tNum(2), tOp(2), tNum(3), tBra(')')];
+                        else tokens = [tBra('('), tNum(0), tOp(0), tNum(1), tBra(')'), tOp(1), tBra('('), tNum(2), tOp(2), tNum(3), tBra(')')];
                     } else {
-                        tokens = [tNum(0), tOp(0), tBra('(',0), tNum(1), tOp(1), tNum(2), tBra(')',1), tOp(2), tNum(3), tOp(3), tNum(4)];
+                        tokens = [tNum(0), tOp(0), tBra('('), tNum(1), tOp(1), tNum(2), tBra(')'), tOp(2), tNum(3), tOp(3), tNum(4)];
                     }
                 }
-
                 if (isValidEquation(tokens)) return tokens;
             }
-            return [{ type: 'num', value: 10, id: 'f1' }, { type: 'op', value: '+', id: 'f2' }, { type: 'num', value: 5, id: 'f3' }];
         };
 
         const isValidEquation = (initialTokens) => {
@@ -377,46 +259,33 @@
             while (tokens.length > 1) {
                 const moves = getValidMoves(tokens);
                 if (moves.length === 0) return false;
-                
-                const move = moves[0]; 
-                const leftVal = move.left.value;
-                const rightVal = move.right.value;
-                const op = move.op.value;
-                const val = safeEval(leftVal, op, rightVal);
-                
-                if (op === '/' && leftVal % rightVal !== 0) return false;
-                if (op === '-' && val <= 0) return false;
-                if (!Number.isInteger(val) || val <= 0 || val > 150) return false;
-                
+                const move = moves[0];
+                const val = safeEval(move.left.value, move.op.value, move.right.value);
+                if (move.op.value === '/' && move.left.value % move.right.value !== 0) return false;
+                if (move.op.value === '-' && val <= 0) return false;
+                if (!Number.isInteger(val) || val <= 0 || val > 200) return false;
                 const newTokens = [];
                 for (let i = 0; i < tokens.length; i++) {
                     if (tokens[i].id === move.left.id) {
                         newTokens.push({ type: 'num', value: val, id: `sim-${Math.random()}` });
                         i += 2;
-                    } else {
-                        newTokens.push(tokens[i]);
-                    }
+                    } else { newTokens.push(tokens[i]); }
                 }
                 tokens = cleanBrackets(newTokens);
-                if (!tokens) return false;
             }
             return true;
         };
 
         const cleanBrackets = (tokens) => {
-            let changed = true;
             let current = [...tokens];
+            let changed = true;
             while (changed) {
                 changed = false;
                 const next = [];
                 for (let i = 0; i < current.length; i++) {
                     if (current[i]?.value === '(' && current[i+1]?.type === 'num' && current[i+2]?.value === ')') {
-                        next.push(current[i+1]);
-                        i += 2;
-                        changed = true;
-                    } else {
-                        next.push(current[i]);
-                    }
+                        next.push(current[i+1]); i += 2; changed = true;
+                    } else { next.push(current[i]); }
                 }
                 current = next;
             }
@@ -425,48 +294,37 @@
 
         const getValidMoves = (tokens) => {
             let deepestStart = -1, deepestEnd = -1, maxDepth = 0, currentDepth = 0;
-
             for (let i = 0; i < tokens.length; i++) {
                 if (tokens[i].value === '(') {
                     currentDepth++;
-                    if (currentDepth > maxDepth) { maxDepth = currentDepth; deepestStart = i; } 
-                    else { deepestStart = i; }
+                    if (currentDepth > maxDepth) { maxDepth = currentDepth; deepestStart = i; }
+                    else deepestStart = i;
                 } else if (tokens[i].value === ')') {
-                    if (deepestEnd === -1 && currentDepth === maxDepth) { deepestEnd = i; }
+                    if (deepestEnd === -1 && currentDepth === maxDepth) deepestEnd = i;
                     currentDepth--;
                 }
             }
-
             let start = 0, end = tokens.length;
             if (deepestStart !== -1 && deepestEnd !== -1) { start = deepestStart + 1; end = deepestEnd; }
-
-            let moves = [];
-            let hasDM = false;
-            
+            let movesDM = [];
             for (let i = start; i < end; i++) {
                 if (tokens[i].type === 'op' && (tokens[i].value === '*' || tokens[i].value === '/')) {
-                    hasDM = true;
-                    if (tokens[i-1] && tokens[i+1]) moves.push({ index: i, op: tokens[i], left: tokens[i-1], right: tokens[i+1], priority: 2 });
+                    movesDM.push({ index: i, op: tokens[i], left: tokens[i-1], right: tokens[i+1] });
                 }
             }
-            if (hasDM) return moves;
-
+            if (movesDM.length > 0) return [movesDM[0]];
+            let movesAS = [];
             for (let i = start; i < end; i++) {
                 if (tokens[i].type === 'op' && (tokens[i].value === '+' || tokens[i].value === '-')) {
-                    if (tokens[i-1] && tokens[i+1]) moves.push({ index: i, op: tokens[i], left: tokens[i-1], right: tokens[i+1], priority: 1 });
+                    movesAS.push({ index: i, op: tokens[i], left: tokens[i-1], right: tokens[i+1] });
                 }
             }
-            return moves;
+            return movesAS.length > 0 ? [movesAS[0]] : [];
         };
 
-        // --- AUDIO ENGINE ---
         const initAudio = () => {
-            if (!audioCtxRef.current) {
-                audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtxRef.current.state === 'suspended') {
-                audioCtxRef.current.resume();
-            }
+            if (!audioCtxRef.current) audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtxRef.current.state === 'suspended') audioCtxRef.current.resume();
             return audioCtxRef.current;
         };
 
@@ -478,565 +336,219 @@
             osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
             gain.gain.setValueAtTime(vol, ctx.currentTime + start);
             gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start(ctx.currentTime + start);
-            osc.stop(ctx.currentTime + start + dur);
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.start(ctx.currentTime + start); osc.stop(ctx.currentTime + start + dur);
         };
 
         const playMusic = () => {
             if (musicInterval) clearInterval(musicInterval);
             if (!state.isMusicOn) return;
-
-            const ctx = initAudio();
-            const melody = [261.63, 329.63, 392.00, 523.25, 196.00, 246.94, 293.66, 392.00, 220.00, 261.63, 329.63, 440.00, 174.61, 220.00, 261.63, 349.23];
-            let nextTime = ctx.currentTime + 0.1;
-            let noteIndex = 0;
-
-            const schedule = () => {
-                if (!state.isMusicOn) return;
-                while (nextTime < ctx.currentTime + 0.5) {
-                    const freq = melody[noteIndex % melody.length];
-                    playTone('triangle', freq, nextTime - ctx.currentTime, 0.2, 0.015);
-                    if (noteIndex % 4 === 0) {
-                        playTone('square', freq / 2, nextTime - ctx.currentTime, 0.4, 0.01);
-                    }
-                    nextTime += 0.25;
-                    noteIndex++;
-                }
-            };
-            musicInterval = setInterval(schedule, 100);
-        };
-
-        const stopMusic = () => {
-            if (musicInterval) {
-                clearInterval(musicInterval);
-                musicInterval = null;
-            }
+            const melody = [261, 329, 392, 523];
+            let note = 0;
+            musicInterval = setInterval(() => {
+                playTone('triangle', melody[note % 4], 0, 0.2, 0.01);
+                note++;
+            }, 250);
         };
 
         const soundEffects = {
-            wrong: () => {
-                const ctx = initAudio();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(150, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.3);
-                gain.gain.setValueAtTime(0.1, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.3);
-            },
+            wrong: () => playTone('sawtooth', 100, 0, 0.3, 0.1),
             correct: () => playTone('sine', 600, 0, 0.4, 0.1),
-            strike: () => {
-                const ctx = initAudio();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(100, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                gain.gain.setValueAtTime(0.1, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.3);
-            },
-            victory: () => {
-                const now = 0;
-                [523.25, 659.25, 783.99, 1046.50, 783.99, 1046.50].forEach((f, i) => {
-                    playTone('triangle', f, i * 0.15, 0.3, 0.1);
-                });
-            }
+            strike: () => playTone('square', 150, 0, 0.2, 0.1),
+            victory: () => [523, 659, 783, 1046].forEach((f, i) => playTone('triangle', f, i * 0.1, 0.3, 0.1))
         };
 
-        // --- RENDER FUNCTIONS ---
-        const app = document.getElementById('app');
-
-        function render() {
-            if (state.screen === 'menu') {
-                renderMenu();
-            } else {
-                renderGame();
-            }
-        }
+        function render() { if (state.screen === 'menu') renderMenu(); else renderGame(); }
 
         function renderMenu() {
-            const levelsHtml = LEVELS.map(lvl => {
-                const isUnlocked = state.unlockedLevels.includes(lvl.id);
-                return `
-                    <button class="btn btn-level ${!isUnlocked ? 'locked' : ''}" 
-                            ${!isUnlocked ? 'disabled' : ''} 
-                            onclick="startGame(${lvl.id})">
-                        <div class="flex items-center gap-6">
-                            <div class="level-icon ${isUnlocked ? 'bg-green-500-custom text-white' : 'bg-stone-400 text-stone-600'}" style="background-color: ${isUnlocked ? 'var(--green-500)' : 'var(--stone-400)'}; color: ${isUnlocked ? 'white' : 'var(--stone-600)'}">
-                                ${isUnlocked ? lvl.id : ICONS.lock}
-                            </div>
-                            <div style="text-align: left;">
-                                <h3 style="font-size: 1.875rem; margin:0; color: var(--stone-800);">${lvl.name}</h3>
-                                <p style="font-size: 1.25rem; margin:0; color: var(--stone-500);">${lvl.desc}</p>
-                            </div>
+            const levelsHtml = LEVELS.map((lvl) => `
+                <button class="btn btn-level lvl-${lvl.id}" onclick="startGame(${lvl.id})">
+                    <div class="flex items-center gap-6">
+                        <div class="pixel-card" style="width: 4.5rem; height: 4.5rem; display: flex; align-items: center; justify-content:center; background: white; color: black; font-size: 2.8rem;">${lvl.id}</div>
+                        <div style="text-align: left;">
+                            <h3 style="margin:0; font-size: 2.5rem;">${lvl.name}</h3>
+                            <p style="margin:0; font-size: 1.4rem; opacity: 0.9;">${lvl.desc}</p>
                         </div>
-                        ${isUnlocked ? `<div style="color: var(--stone-400);">${ICONS.chevron}</div>` : ''}
-                    </button>
-                `;
-            }).join('');
+                    </div>
+                    <div>${ICONS.chevron}</div>
+                </button>
+            `).join('');
 
             app.innerHTML = `
-                <div class="flex flex-col items-center pt-12" style="background: linear-gradient(to bottom, var(--sky-400), var(--green-400)); min-height: 100vh;">
-                    <div class="pixel-card p-8 mb-8 text-center w-full max-w-4xl" style="background-color: rgba(255,255,255,0.9); border-radius: 0.5rem;">
-                        <h1 class="mb-2" style="font-size: 3.75rem; color: var(--green-600); margin-top:0;">MATH QUEST</h1>
-                        <p style="font-size: 1.5rem; color: var(--stone-600);">DEFEAT THE MONSTER: SCORE ${WIN_THRESHOLD} POINTS!</p>
+                <div class="flex flex-col items-center pt-12">
+                    <div class="pixel-card p-10 mb-10 text-center w-full" style="background: linear-gradient(45deg, var(--green-200), var(--white));">
+                        <h1 style="font-size: 5rem; color: var(--green-600); margin:0; text-shadow: 3px 3px 0 white;">MATH QUEST</h1>
+                        <p style="font-size: 2.2rem; color: var(--stone-600); font-weight: bold;">Follow Order of Operations to Defeat the Monster!</p>
                     </div>
-                    <div class="flex flex-col gap-6 w-full max-w-2xl">
-                        ${levelsHtml}
-                    </div>
+                    <div class="flex flex-col w-full max-w-2xl">${levelsHtml}</div>
                 </div>
             `;
         }
 
         function renderGame() {
-            const levelConfig = LEVELS.find(l => l.id === state.currentLevel);
             const getDisplayOp = (op) => op === '*' ? '×' : op === '/' ? '÷' : op;
 
-            // Header
-            let headerHtml = `
-                <div class="flex justify-between items-center mb-6 p-4 pixel-shadow" style="background-color: rgba(255,255,255,0.5); border-radius: 0.75rem; border-bottom: 4px solid var(--stone-800);">
-                    <div class="flex flex-col gap-1">
-                        <div class="flex items-center gap-2 font-bold" style="color: var(--blue-700);">
-                            ${ICONS.sword} <span style="font-size: 1.25rem;">MONSTER DEFEAT</span>
-                        </div>
-                        <div class="bar-container">
-                            <div class="bar-fill" style="background-color: ${state.monsterHP >= WIN_THRESHOLD ? 'var(--green-500)' : 'var(--yellow-400)'}; width: ${(state.monsterHP / MAX_SCORE_POINTS) * 100}%;"></div>
-                            <div class="absolute" style="top:0; bottom:0; width:4px; background-color: rgba(239,68,68,0.5); left: ${(WIN_THRESHOLD / MAX_SCORE_POINTS) * 100}%; z-index:10;"></div>
-                            <div class="absolute w-full h-full flex items-center justify-center font-bold" style="top:0; color: var(--stone-900); font-size: 1.125rem;">${state.monsterHP} / ${MAX_SCORE_POINTS}</div>
-                        </div>
-                        <div style="font-size: 0.75rem; font-weight: bold; color: var(--stone-500);">GOAL: ${WIN_THRESHOLD}+ POINTS</div>
-                    </div>
-                    <div class="flex flex-col items-center gap-2">
-                        <div class="flex gap-2">
-                            <button onclick="toggleMusic()" class="btn flex items-center gap-2 rounded font-bold" style="padding: 0.25rem 0.75rem; font-size: 0.875rem; border: 2px solid var(--stone-600); background-color: ${state.isMusicOn ? 'var(--green-500)' : 'var(--stone-300)'}; color: ${state.isMusicOn ? 'white' : 'var(--stone-600)'};">
-                                ${state.isMusicOn ? ICONS.volumeOn : ICONS.volumeOff} BGM
-                            </button>
-                            <button onclick="exitGame()" class="btn font-bold" style="font-size: 0.875rem; color: var(--stone-600); text-decoration: underline; background:none;">EXIT</button>
-                        </div>
-                        <div class="rounded font-bold" style="background-color: var(--stone-800); color: white; padding: 0.5rem 1rem; border: 2px solid var(--stone-600); font-size: 1.25rem;">
-                            QUESTION ${state.questionCount} / ${QUESTIONS_PER_LEVEL}
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            // Battle Arena
             let arenaHtml = `
-                <div class="pixel-shadow mb-8 relative rounded-lg bg-pattern" style="width: 100%; height: 16rem; border: 4px solid var(--stone-800); background-color: var(--sky-400); overflow: hidden;">
-                    <div class="absolute" style="bottom: 0; width: 100%; height: 3rem; background-color: var(--green-500); border-top: 4px solid var(--green-700);"></div>
-                    
-                    <!-- HERO -->
-                    <div class="hero ${state.heroAction === 'attack' ? 'attack' : ''}" style="${state.heroAction === 'damage' ? 'opacity: 0.5;' : ''}">
-                        <div style="transform: scale(1.25); transform-origin: bottom center;">
-                            <div class="pixel-shadow" style="width: 3rem; height: 3rem; background-color: #e0aa89; border: 2px solid black; margin: 0 auto; position: relative;">
-                                <div style="position: absolute; top: 1rem; left: 0.5rem; width: 0.5rem; height: 0.5rem; background: white;"></div>
-                                <div style="position: absolute; top: 1rem; right: 0.5rem; width: 0.5rem; height: 0.5rem; background: white;"></div>
-                            </div>
-                            <div class="pixel-shadow" style="width: 4rem; height: 4rem; background-color: var(--cyan-600); border: 2px solid black; margin: 0 auto; position: relative; z-index: 10;">
-                                ${state.heroAction === 'attack' ? `<div style="position: absolute; right: -2rem; top: 0.5rem; color: var(--stone-300);">${ICONS.sword}</div>` : ''}
-                            </div>
-                            <div class="flex justify-center" style="margin-top: -0.25rem;">
-                                <div style="width: 1.5rem; height: 2.5rem; background-color: var(--blue-800); border: 2px solid black;"></div>
-                                <div style="width: 1.5rem; height: 2.5rem; background-color: var(--blue-800); border: 2px solid black; border-left: 0;"></div>
-                            </div>
-                        </div>
+                <div class="arena mb-8 pixel-card">
+                    <div class="ground"></div>
+                    <div class="hero animate-float ${state.heroAction === 'attack' ? 'attack' : ''}">
+                        <div class="hero-head"><div class="eye animate-blink" style="left:8px;"></div><div class="eye animate-blink" style="right:10px;"></div></div>
+                        <div class="hero-body"></div>
                     </div>
-
-                    <!-- MONSTER -->
-                    <div class="monster ${state.shake ? 'damage' : ''}">
-                         <div class="pixel-shadow" style="width: 6rem; height: 11rem; background-color: var(--purple-900); border: 4px solid black; position: relative;">
-                            <div style="width: 100%; height: 5rem; border-bottom: 4px solid black; position: relative;">
-                                <div style="position: absolute; top: 2rem; left: 0.5rem; width: 1.5rem; height: 0.75rem; background-color: var(--pink-500);"></div>
-                                <div style="position: absolute; top: 2rem; right: 0.5rem; width: 1.5rem; height: 0.75rem; background-color: var(--pink-500);"></div>
-                            </div>
-                         </div>
+                    <div class="monster animate-float ${state.shake ? 'animate-damage' : ''}">
+                        <div class="monster-body"><div class="eye animate-blink" style="left:15px; background: #ff00ff;"></div><div class="eye animate-blink" style="right:15px; background: #ff00ff;"></div></div>
                     </div>
-
-                    ${state.heroAction === 'attack' ? `<div class="absolute animate-bounce" style="top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3.75rem; font-weight: bold; color: var(--yellow-300); text-shadow: 2px 2px 0 #000;">SMASH!</div>` : ''}
+                    ${state.heroAction === 'attack' ? `<div class="slash-effect"></div>` : ''}
+                    <div style="position: absolute; top: 15px; left: 15px;">
+                        <span style="font-weight:bold; font-size: 1.8rem; color: white; text-shadow: 2px 2px 0 black;">HERO HP</span>
+                        <div class="bar-container"><div class="bar-fill" style="background: var(--green-500); width: 100%;"></div></div>
+                    </div>
+                    <div style="position: absolute; top: 15px; right: 15px; text-align: right;">
+                        <span style="font-weight:bold; font-size: 1.8rem; color: white; text-shadow: 2px 2px 0 black;">MONSTER HP</span>
+                        <div class="bar-container"><div class="bar-fill" style="background: var(--red-500); width: ${((20 - state.monsterHP)/20)*100}%;"></div></div>
+                    </div>
                 </div>
             `;
 
-            // Game Area Content
             let contentHtml = '';
-
             if (state.gameState === 'delay') {
-                let historyHtml = state.history.map((h, i) => `
-                    <div class="flex items-center justify-center gap-3 w-full" style="margin-bottom: 0.5rem;">
-                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--stone-600);">Step ${i+1}:</div>
-                        <div class="flex gap-2 p-2 rounded" style="background-color: var(--white); border: 2px solid var(--stone-300);">
-                            <div style="font-size: 1.5rem; font-weight: bold;">
-                                ${h.prevTokens.map(t => {
-                                    const isPart = (t.id === h.leftId || t.id === h.opId || t.id === h.rightId);
-                                    return `<span class="${isPart ? 'highlight-working' : ''}" style="color: ${isPart ? 'var(--stone-900)' : 'var(--stone-700)'}">${t.type === 'op' ? getDisplayOp(t.value) : t.value}</span>`;
-                                }).join('')}
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
+                const lines = state.history.map((h, i) => {
+                    const eqString = h.snapshot.map(t => t.type === 'op' ? getDisplayOp(t.value) : t.value).join(' ');
+                    return `<span class="working-line">${i === 0 ? '' : '= '}${eqString}</span>`;
+                });
+                lines.push(`<span class="working-line" style="color: var(--green-600); font-weight: bold;">= ${state.tokens[0].value}</span>`);
 
                 contentHtml = `
-                    <div class="flex flex-col items-center justify-center relative" style="min-height: 300px;">
-                        <div class="absolute" style="top: 0; right: 0; text-align: center;">
-                            <span style="font-size: 0.75rem; color: var(--stone-500); font-weight: bold;">NEXT IN</span>
-                            <div style="width: 3rem; height: 3rem; background-color: var(--stone-800); border: 2px solid var(--stone-600); border-radius: 0.5rem; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">
-                                ${state.delayTimer}
-                            </div>
+                    <div class="text-center">
+                        <h2 style="font-size: 3.5rem; color: var(--green-600); margin-top:0;">CORRECT!</h2>
+                        <div class="pixel-card p-8 mb-8" style="background: var(--stone-100); text-align: left; display: inline-block; min-width: 60%; border-color: var(--green-600);">
+                            ${lines.join('')}
                         </div>
-                        <h2 class="mb-4 flex items-center gap-2" style="font-size: 1.875rem; color: var(--green-600); font-weight: bold; letter-spacing: 0.1em;">WORKING</h2>
-                        <div class="flex flex-col items-center gap-2 p-6 rounded-xl w-full max-w-xl" style="background-color: var(--stone-100); border: 4px solid var(--stone-200);">
-                            ${historyHtml}
-                            <div class="flex items-center justify-center gap-3 w-full mt-4 p-4 rounded-lg" style="background-color: var(--yellow-300); border: 4px solid var(--yellow-600);">
-                                <div style="font-size: 1.875rem; color: var(--yellow-800); font-weight: bold;">FINAL ANSWER:</div>
-                                <div style="color: var(--stone-900); font-size: 2.25rem; font-weight: bold;">
-                                    ${state.tokens[0]?.value}
-                                </div>
-                            </div>
-                        </div>
+                        <br>
+                        <button onclick="proceedToNextQuestion()" class="btn" style="padding: 1.5rem 4rem; background: var(--green-500); color: white; font-size: 3rem;">NEXT QUESTION</button>
                     </div>
                 `;
-            } else if (state.gameState === 'victory') {
+            } else if (state.gameState === 'victory' || state.gameState === 'gameover') {
                 contentHtml = `
-                    <div class="flex flex-col items-center justify-center text-center animate-fade-in-up" style="height: 16rem;">
-                        ${ICONS.trophy}
-                        <h2 style="font-size: 3rem; color: var(--yellow-600); font-weight: bold; margin: 0.5rem 0;">VICTORY!</h2>
-                        <p style="font-size: 1.25rem; color: var(--stone-600); margin-bottom: 1.5rem;">You defeated the monster with ${state.monsterHP} points!</p>
-                        <button onclick="nextLevel()" class="btn btn-action btn-green">NEXT LEVEL</button>
-                    </div>
-                `;
-            } else if (state.gameState === 'gameover') {
-                contentHtml = `
-                    <div class="flex flex-col items-center justify-center text-center animate-fade-in-up" style="height: 16rem;">
-                        ${ICONS.xCircle}
-                        <h2 style="font-size: 3rem; color: var(--red-600); font-weight: bold; margin: 0.5rem 0;">DEFEAT!</h2>
-                        <p style="font-size: 1.25rem; color: var(--stone-600); margin-bottom: 1.5rem;">Score: ${state.monsterHP}. Needed: ${WIN_THRESHOLD}</p>
-                        <button onclick="exitGame()" class="btn btn-action btn-red" style="background-color: var(--stone-500); border-color: var(--stone-700);">TRY AGAIN</button>
+                    <div class="text-center py-10 pixel-card" style="background: ${state.gameState === 'victory' ? 'var(--yellow-100)' : 'var(--red-100)'}">
+                        <h2 style="font-size: 5rem; margin:0;">${state.gameState === 'victory' ? 'VICTORY!' : 'DEFEAT!'}</h2>
+                        <p style="font-size: 2.8rem;">Final Score: ${state.monsterHP}</p>
+                        <button onclick="exitGame()" class="btn" style="padding: 1.2rem 3.5rem; font-size: 2.2rem; background: white;">RETURN TO MENU</button>
                     </div>
                 `;
             } else {
-                let feedbackClass = (state.feedback.includes('Mistake') || state.feedback.includes('Wrong') || state.feedback.includes('Invalid')) 
-                    ? 'background-color: var(--red-50); border-color: var(--red-200); color: var(--red-600);' 
-                    : 'background-color: var(--blue-50); border-color: var(--blue-200); color: var(--blue-800);';
-                
-                let tokensHtml = state.tokens.map((token, idx) => {
-                    let isSelected = state.selectedIndices.includes(idx);
-                    let isActiveStep = state.selectedStep && (state.selectedStep.index === idx || state.selectedStep.index === idx-1 || state.selectedStep.index === idx+1);
-                    let btnClass = isSelected || isActiveStep ? (token.type === 'op' ? 'selected-op' : 'selected-num') : '';
-                    
-                    if (token.type === 'bracket') {
-                        return `<div style="font-size: 3rem; color: var(--orange-500); font-weight: bold; padding: 0 0.25rem; font-family: sans-serif;">${token.value}</div>`;
-                    }
-                    
-                    return `
-                        <button onclick="handleTokenClick(${idx})" 
-                                class="btn token-btn ${token.type} ${btnClass}"
-                                ${state.selectedStep ? 'disabled' : ''}>
-                            ${token.type === 'op' ? getDisplayOp(token.value) : token.value}
-                        </button>
-                    `;
+                /* ERROR MESSAGE IN RED INK LOGIC */
+                const isError = state.feedback.includes('Mistake') || state.feedback.includes('Wrong');
+                const feedbackColor = isError ? 'var(--red-ink)' : 'var(--blue-700)';
+                const feedbackBg = isError ? '#fff5f5' : 'white';
+
+                let tokensHtml = state.tokens.map((t, idx) => {
+                    if (t.type === 'bracket') return `<div style="font-size: 4.5rem; color: var(--orange-500); padding: 0 1rem; font-weight: bold;">${t.value}</div>`;
+                    return `<button onclick="handleTokenClick(${idx})" class="btn token-btn ${t.type} ${state.selectedIndices.includes(idx) ? 'selected-' + t.type : ''}">${t.type === 'op' ? getDisplayOp(t.value) : t.value}</button>`;
                 }).join('');
 
-                let historyHtml = state.history.map((h, i) => `
-                    <div class="flex items-center justify-center gap-3 w-full" style="opacity: 0.6; margin-bottom: 0.5rem;">
-                         ${i > 0 ? `<div style="font-size: 1.875rem; color: var(--stone-300); font-weight: bold;">=</div>` : ''}
-                         <div class="flex gap-2 p-2 rounded" style="background-color: var(--stone-100); border: 2px solid var(--stone-200);">
-                             ${h.prevTokens.map(t => `<span style="font-size: 1.5rem; font-weight: bold; color: var(--stone-500);">${t.type === 'op' ? getDisplayOp(t.value) : t.value}</span>`).join('')}
-                         </div>
-                    </div>
-                `).join('');
-
-                let inputForm = state.selectedStep ? `
-                    <div class="animate-fade-in-up p-6 rounded-xl mt-4" style="background-color: var(--stone-800); border: 4px solid var(--stone-900); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
-                        <div class="text-center mb-4" style="color: var(--stone-300); font-weight: bold; font-size: 1.125rem;">
-                            CALCULATE: <span style="color: white; font-size: 1.5rem; background-color: var(--stone-700); padding: 0.25rem 0.75rem; border-radius: 0.25rem; margin-left: 0.5rem;">
-                                ${state.selectedStep.left.value} ${getDisplayOp(state.selectedStep.op.value)} ${state.selectedStep.right.value}
-                            </span>
-                        </div>
-                        <form onsubmit="handleInputSubmit(event)" class="flex gap-3 justify-center">
-                            <input id="gameInput" type="number" class="game-input" value="${state.inputValue}" oninput="state.inputValue = this.value" placeholder="?" autofocus>
-                            <button type="submit" class="btn btn-action btn-green">CHECK</button>
-                            <button type="button" onclick="cancelStep()" class="btn btn-action btn-red" style="padding: 0.5rem 1rem;">X</button>
-                        </form>
-                    </div>
-                ` : '';
-
                 contentHtml = `
-                    <div class="mb-6 p-4 text-center font-bold rounded-lg shadow-sm" style="font-size: 1.25rem; border: 4px solid; ${feedbackClass}">
-                        ${state.feedback}
-                    </div>
-                    <div class="flex flex-col items-center gap-2 mb-8 w-full">
-                        ${historyHtml}
-                        <div class="flex items-center justify-center gap-3 w-full">
-                            ${state.history.length > 0 ? `<div style="font-size: 2.25rem; color: var(--stone-400); font-weight: bold;">=</div>` : ''}
-                            <div class="flex flex-wrap items-center justify-center gap-3 p-4 rounded-xl" style="background-color: var(--stone-50); border: 2px solid var(--stone-100); min-height: 100px;">
-                                ${tokensHtml}
-                            </div>
+                    <div class="mb-8 p-6 text-center pixel-card" style="font-size: 2.5rem; border-color: ${feedbackColor}; color: ${feedbackColor}; background: ${feedbackBg};">${state.feedback}</div>
+                    <div class="flex items-center justify-center flex-wrap gap-2 p-8 pixel-card" style="background: var(--stone-100);">${tokensHtml}</div>
+                    ${state.selectedStep ? `
+                        <div class="pixel-card p-10 mt-10 text-center" style="background: var(--stone-800); color: white;">
+                            <div class="mb-6" style="font-size: 3.5rem; color: var(--yellow-300);">${state.selectedStep.left.value} ${getDisplayOp(state.selectedStep.op.value)} ${state.selectedStep.right.value} = ?</div>
+                            <form onsubmit="handleInputSubmit(event)" class="flex justify-center gap-6">
+                                <input id="gameInput" type="number" class="game-input" oninput="state.inputValue = this.value">
+                                <button type="submit" class="btn" style="background: var(--green-500); color: white; padding: 0 3rem; font-size: 2.5rem;">STRIKE</button>
+                                <button type="button" onclick="cancelStep()" class="btn" style="background: var(--red-500); color: white; padding: 0 1.5rem; font-size: 2.5rem;">X</button>
+                            </form>
                         </div>
-                    </div>
-                    ${inputForm}
+                    ` : ''}
                 `;
             }
 
             app.innerHTML = `
-                <div class="flex flex-col items-center" style="background: linear-gradient(to bottom, var(--sky-300), var(--green-200)); min-height: 100vh; padding: 1rem;">
-                    ${headerHtml}
-                    ${arenaHtml}
-                    <div class="pixel-shadow relative p-6 rounded-lg w-full max-w-3xl ${state.shake ? 'animate-damage' : ''}" style="background-color: white; border: 4px solid var(--stone-800);">
-                        ${contentHtml}
+                <div class="flex justify-between items-center p-6 pixel-card mb-6" style="background: rgba(255,255,255,0.95);">
+                    <div style="font-weight:bold; font-size: 2.4rem;">LEVEL ${state.currentLevel}</div>
+                    <div class="flex gap-6">
+                        <button onclick="toggleMusic()" class="btn" style="padding: 0.6rem;">${state.isMusicOn ? ICONS.volumeOn : ICONS.volumeOff}</button>
+                        <button onclick="exitGame()" class="btn" style="padding: 0.6rem 2.5rem; font-size: 1.8rem;">EXIT</button>
                     </div>
-                    <div class="mt-4 text-shadow-sm font-bold" style="color: var(--stone-700);">Level ${state.currentLevel}: ${levelConfig.desc}</div>
+                    <div style="font-weight:bold; font-size: 2.4rem;">Q: ${state.questionCount}/10</div>
                 </div>
+                ${arenaHtml}
+                <div class="pixel-card p-8">${contentHtml}</div>
             `;
-
-            if(state.selectedStep) {
-                const inp = document.getElementById('gameInput');
-                if(inp) inp.focus();
-            }
+            if (state.selectedStep) document.getElementById('gameInput').focus();
         }
 
-        // --- ACTIONS ---
-
-        function startGame(levelId) {
-            state.currentLevel = levelId;
-            state.screen = 'game';
-            state.monsterHP = 0;
-            state.questionCount = 1;
-            loadNewQuestion();
-            render();
+        function startGame(id) { 
+            state.currentLevel = id; state.screen = 'game'; state.monsterHP = 0; state.questionCount = 1; 
+            loadNewQuestion(); render(); 
+        }
+        function exitGame() { state.screen = 'menu'; stopMusic(); render(); }
+        function loadNewQuestion() { 
+            state.tokens = generateEquation(state.currentLevel); 
+            state.history = [{ snapshot: JSON.parse(JSON.stringify(state.tokens)) }]; 
+            state.gameState = 'input'; 
+            state.feedback = "What is the next operation?"; state.selectedIndices = []; state.selectedStep = null; state.inputValue = '';
         }
 
-        function exitGame() {
-            state.screen = 'menu';
-            stopMusic();
-            render();
-        }
-
-        function nextLevel() {
-            const next = state.currentLevel + 1;
-            if (next <= 5 && !state.unlockedLevels.includes(next)) {
-                state.unlockedLevels.push(next);
-            }
-            state.screen = 'menu';
-            render();
-        }
-
-        function loadNewQuestion() {
-            const newEq = generateEquation(state.currentLevel);
-            state.tokens = newEq;
-            state.history = [];
-            state.gameState = 'input';
-            state.feedback = "Select the 2 numbers and operation to solve first!";
-            state.heroAction = 'idle';
-            state.selectedIndices = [];
-            state.selectedStep = null;
-            state.inputValue = '';
-        }
-
-        function handleTokenClick(index) {
+        function handleTokenClick(idx) {
             if (state.gameState !== 'input') return;
-            const token = state.tokens[index];
-            if (token.type === 'bracket') return;
-
-            if (state.selectedIndices.includes(index)) {
-                state.selectedIndices = state.selectedIndices.filter(i => i !== index);
-                state.feedback = "Select the 2 numbers and operation to solve first!";
-            } else {
-                if (state.selectedIndices.length < 3) state.selectedIndices.push(index);
-            }
-            
-            if (state.selectedIndices.length === 3) checkSelection();
-            render();
-        }
-
-        function checkSelection() {
-            const sorted = [...state.selectedIndices].sort((a, b) => a - b);
-            const isAdjacent = sorted[1] === sorted[0] + 1 && sorted[2] === sorted[1] + 1;
-            
-            if (!isAdjacent) return handleInvalidMove("Parts must be next to each other.");
-
-            const t1 = state.tokens[sorted[0]];
-            const t2 = state.tokens[sorted[1]];
-            const t3 = state.tokens[sorted[2]];
-
-            if (t1.type !== 'num' || t2.type !== 'op' || t3.type !== 'num') {
-                return handleInvalidMove("Select 2 numbers and 1 operator (e.g. 5 + 3).");
-            }
-
-            validateMove(sorted[1]);
-        }
-
-        function handleInvalidMove(msg) {
-            soundEffects.wrong();
-            state.feedback = msg;
-            state.shake = true;
-            render();
-            setTimeout(() => {
-                state.shake = false;
-                state.selectedIndices = [];
-                render();
-            }, 500);
-        }
-
-        function validateMove(opIndex) {
-            const validMoves = getValidMoves(state.tokens);
-            const isValid = validMoves.find(m => m.index === opIndex);
-            const token = state.tokens[opIndex];
-
-            if (isValid) {
-                state.selectedStep = isValid;
-                state.selectedIndices = [];
-                state.inputValue = '';
-                state.feedback = "Great! Now calculate the answer.";
-            } else {
-                soundEffects.wrong();
-                state.shake = true;
-                state.monsterHP = Math.max(0, state.monsterHP - POINTS_LOSE);
-                state.heroAction = 'damage';
-                
-                const clickedOp = token.value;
-                const clickedPriority = (clickedOp === '*' || clickedOp === '/') ? 2 : 1;
-                const hasBrackets = state.tokens.some(t => t.value === '(');
-                const bestMove = validMoves[0];
-                const bestPriority = (bestMove.op.value === '*' || bestMove.op.value === '/') ? 2 : 1;
-
-                if (hasBrackets && validMoves[0].op.id !== token.id) state.feedback = "Mistake: You must solve inside brackets ( ) first!";
-                else if (bestPriority > clickedPriority) state.feedback = "Mistake: Multiply/Divide before Add/Subtract!";
-                else if (bestPriority === clickedPriority && bestMove.index < opIndex) state.feedback = "Mistake: For same priority, solve Left to Right!";
-                else state.feedback = "Incorrect step order. Remember BODMAS!";
-
-                render();
-                setTimeout(() => {
-                    state.shake = false;
-                    state.heroAction = 'idle';
-                    state.selectedIndices = [];
-                    render();
-                }, 1000);
+            if (state.selectedIndices.includes(idx)) state.selectedIndices = state.selectedIndices.filter(i => i !== idx);
+            else if (state.selectedIndices.length < 3) state.selectedIndices.push(idx);
+            if (state.selectedIndices.length === 3) {
+                const sorted = [...state.selectedIndices].sort((a,b)=>a-b);
+                const [t1, t2, t3] = [state.tokens[sorted[0]], state.tokens[sorted[1]], state.tokens[sorted[2]]];
+                if (sorted[1] === sorted[0]+1 && sorted[2] === sorted[1]+1 && t1.type === 'num' && t2.type === 'op' && t3.type === 'num') {
+                    const validMoves = getValidMoves(state.tokens);
+                    if (validMoves[0].op.id === t2.id) {
+                        state.selectedStep = validMoves[0]; state.selectedIndices = []; state.feedback = "CORRECT! Strike the monster!";
+                    } else {
+                        state.shake = true; soundEffects.wrong();
+                        const hasBra = state.tokens.some(t => t.value === '(');
+                        const hasMD = state.tokens.filter(t => t.type === 'op').some(o => o.value === '*' || o.value === '/');
+                        if (hasBra) state.feedback = "Mistake: Brackets () first!";
+                        else if (hasMD && (t2.value === '+' || t2.value === '-')) state.feedback = "Mistake: Multiply/Divide before Add/Subtract!";
+                        else state.feedback = "Mistake: Same priority? Solve Left to Right!";
+                        setTimeout(()=> { state.shake = false; state.selectedIndices = []; render(); }, 1200);
+                    }
+                } else { state.selectedIndices = []; }
             }
             render();
         }
 
         function handleInputSubmit(e) {
             e.preventDefault();
-            if (!state.selectedStep) return;
-
-            const userVal = parseInt(state.inputValue);
-            const step = state.selectedStep;
-            const correctVal = safeEval(step.left.value, step.op.value, step.right.value);
-
-            if (userVal === correctVal) {
-                soundEffects.correct();
+            const correctVal = safeEval(state.selectedStep.left.value, state.selectedStep.op.value, state.selectedStep.right.value);
+            if (parseInt(state.inputValue) === correctVal) {
+                document.getElementById('body').classList.add('pulse-screen');
+                state.heroAction = 'attack'; soundEffects.strike();
                 
-                // Store state for Working screen
-                state.history.push({
-                    prevTokens: JSON.parse(JSON.stringify(state.tokens)),
-                    leftId: step.left.id,
-                    opId: step.op.id,
-                    rightId: step.right.id,
-                    res: correctVal
-                });
-
                 const newTokens = [];
                 for (let i = 0; i < state.tokens.length; i++) {
-                    if (state.tokens[i].id === step.left.id) {
-                        newTokens.push({ type: 'num', value: correctVal, id: `res-${Date.now()}` });
-                        i += 2;
-                    } else {
-                        newTokens.push(state.tokens[i]);
-                    }
+                    if (state.tokens[i].id === state.selectedStep.left.id) { newTokens.push({ type: 'num', value: correctVal, id: `r-${Math.random()}` }); i += 2; }
+                    else newTokens.push(state.tokens[i]);
                 }
-                
-                const cleanedTokens = cleanBrackets(newTokens);
-                state.tokens = cleanedTokens;
-                state.selectedStep = null;
-                
-                if (cleanedTokens.length === 1) {
-                    handleQuestionComplete();
-                } else {
-                    state.feedback = "Correct! Select the next step.";
-                    render();
-                }
-            } else {
-                soundEffects.wrong();
-                state.shake = true;
-                state.feedback = `Wrong! ${step.left.value} ${step.op.value} ${step.right.value} is NOT ${userVal}.`;
-                state.monsterHP = Math.max(0, state.monsterHP - POINTS_LOSE);
-                state.heroAction = 'damage';
-                render();
+                state.tokens = cleanBrackets(newTokens); 
+                state.selectedStep = null; state.inputValue = '';
+                state.history.push({ snapshot: JSON.parse(JSON.stringify(state.tokens)) });
+
                 setTimeout(() => {
-                    state.shake = false;
+                    document.getElementById('body').classList.remove('pulse-screen');
                     state.heroAction = 'idle';
+                    if (state.tokens.length === 1) { 
+                        state.monsterHP += 2; 
+                        if (state.questionCount >= 10) state.gameState = state.monsterHP >= 18 ? 'victory' : 'gameover';
+                        else state.gameState = 'delay';
+                    } else state.feedback = "EXCELLENT! What's next?";
                     render();
-                }, 500);
-            }
+                }, 400);
+            } else { state.feedback = "Wrong answer! Calculate again."; soundEffects.wrong(); state.shake = true; setTimeout(()=> { state.shake = false; render(); }, 500); }
         }
 
-        function cancelStep() {
-            state.selectedStep = null;
-            state.feedback = "Select a step";
-            render();
-        }
+        function proceedToNextQuestion() { state.questionCount++; loadNewQuestion(); render(); }
+        function cancelStep() { state.selectedStep = null; state.selectedIndices = []; state.feedback = "What is the next operation?"; render(); }
+        function toggleMusic() { state.isMusicOn = !state.isMusicOn; playMusic(); render(); }
 
-        function handleQuestionComplete() {
-            state.gameState = 'animation';
-            state.heroAction = 'attack';
-            soundEffects.strike();
-            state.monsterHP = Math.min(MAX_SCORE_POINTS, state.monsterHP + POINTS_WIN);
-            render();
-
-            setTimeout(() => {
-                state.heroAction = 'idle';
-                if (state.questionCount >= QUESTIONS_PER_LEVEL) {
-                    if (state.monsterHP >= WIN_THRESHOLD) {
-                        state.gameState = 'victory';
-                        soundEffects.victory();
-                    } else {
-                        state.gameState = 'gameover';
-                    }
-                } else {
-                    startDelayTimer();
-                }
-                render();
-            }, 600);
-        }
-
-        function startDelayTimer() {
-            state.gameState = 'delay';
-            state.delayTimer = 5;
-            render();
-            const interval = setInterval(() => {
-                state.delayTimer--;
-                if (state.delayTimer <= 0) {
-                    clearInterval(interval);
-                    state.questionCount++;
-                    loadNewQuestion();
-                }
-                render();
-            }, 1000);
-        }
-
-        function toggleMusic() {
-            state.isMusicOn = !state.isMusicOn;
-            if (state.isMusicOn) {
-                initAudio();
-                playMusic();
-            } else {
-                stopMusic();
-            }
-            render();
-        }
-
-        // --- INIT ---
         render();
-
     </script>
 </body>
 </html>
