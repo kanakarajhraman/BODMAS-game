@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Math Quest - Order of Operations</title>
     <style>
         /* --- CSS VARIABLES --- */
@@ -39,15 +39,16 @@
             align-items: center;
             justify-content: center;
             user-select: none;
-            overflow: hidden;
-            font-size: calc(12px + 0.5vmin); 
+            overflow: hidden; /* Prevent body scroll, use app scroll */
+            font-size: calc(12px + 0.6vmin); 
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
+        /* --- IPAD OPTIMIZED APP AREA --- */
         #app {
             width: 98vw;
-            max-width: 1400px;
+            max-width: 1200px;
             height: 98vh;
             background-color: var(--sky-300);
             border: 0.8vmin solid var(--stone-800);
@@ -55,7 +56,9 @@
             display: flex;
             flex-direction: column;
             position: relative;
-            overflow-y: auto;
+            overflow-y: auto; 
+            /* Improved scrolling for iPad */
+            -webkit-overflow-scrolling: touch; 
             border-radius: 1.5vmin;
             background-size: cover;
             background-position: center;
@@ -96,7 +99,6 @@
         .animate-damage { animation: shake 0.5s both; }
         .pulse-screen { animation: screenPulse 0.3s ease-out; }
 
-        /* --- PROPORTIONAL BUTTONS --- */
         .btn {
             cursor: pointer;
             border: 0.4vmin solid var(--stone-800);
@@ -115,7 +117,7 @@
             padding: 2vmin 3vmin;
             margin-bottom: 1.5vmin;
             color: white;
-            font-size: 4vmin;
+            font-size: clamp(1.4rem, 4vmin, 2.4rem);
             text-shadow: 0.3vmin 0.3vmin 0 black;
         }
         .lvl-1 { background-color: var(--green-500); }
@@ -125,8 +127,8 @@
         .lvl-5 { background-color: var(--red-500); }
 
         .token-btn {
-            padding: 1.5vmin 2.5vmin;
-            font-size: 5vmin;
+            padding: 1vmin 2vmin;
+            font-size: clamp(1.2rem, 5vmin, 3.5rem);
             border-radius: 1vmin;
             margin: 0.5vmin;
         }
@@ -134,10 +136,10 @@
         .token-btn.op { background-color: var(--orange-500); color: white; }
         .token-btn.selected-num, .token-btn.selected-op { background-color: var(--yellow-300); color: var(--stone-900); transform: scale(1.1); }
 
-        /* --- PROPORTIONAL ARENA --- */
+        /* --- IPAD RATIO ARENA --- */
         .arena {
-            height: 35vmin;
-            min-height: 280px;
+            height: 30vmin; /* Reduced for iPad screen height management */
+            min-height: 240px;
             border-bottom: 0.8vmin solid var(--stone-800);
             position: relative;
             overflow: hidden;
@@ -152,7 +154,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 20vmin;
+            width: 18vmin;
         }
         .hero-pos { left: 10%; }
         .monster-pos { right: 10%; }
@@ -169,8 +171,8 @@
 
         .bar-container { 
             width: 100%; 
-            height: 2vmin; 
-            min-height: 15px;
+            height: 1.8vmin; 
+            min-height: 12px;
             background: var(--stone-300); 
             border: 0.3vmin solid black; 
             margin-bottom: 1vmin;
@@ -186,12 +188,12 @@
         }
 
         .game-input {
-            width: 15vmin; font-size: 6vmin; text-align: center; border: 0.5vmin solid black; font-family: inherit; font-weight: bold;
+            width: 15vmin; font-size: 5vmin; text-align: center; border: 0.5vmin solid black; font-family: inherit; font-weight: bold;
         }
 
         .working-line {
-            font-size: 4vmin;
-            margin: 1vmin 0;
+            font-size: clamp(1rem, 3.8vmin, 2.6rem);
+            margin: 0.8vmin 0;
             display: block;
             white-space: nowrap;
         }
@@ -202,9 +204,9 @@
         }
 
         .feedback-box {
-            font-size: 3vmin;
-            padding: 2vmin;
-            min-height: 8vmin;
+            font-size: clamp(1rem, 3vmin, 1.8rem);
+            padding: 1.5vmin;
+            min-height: 7vmin;
             margin-bottom: 2vmin;
         }
     </style>
@@ -264,50 +266,41 @@
             const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
             let attempts = 0;
             
-            while (attempts < 4000) {
+            while (attempts < 5000) {
                 attempts++;
                 let tokens = [];
-                const tNum = (v) => ({ type: 'num', value: v, id: `n-${Math.random()}` });
+                const tNum = () => ({ type: 'num', value: getRandomInt(1, 9), id: `n-${Math.random()}` });
                 const tOp = () => ({ type: 'op', value: level.rules[getRandomInt(0, level.rules.length - 1)], id: `o-${Math.random()}` });
                 const tBra = (v) => ({ type: 'bracket', value: v, id: `b-${Math.random()}` });
 
                 if (levelId < 4) {
                     for (let i = 0; i < level.length; i++) {
-                        tokens.push(tNum(getRandomInt(1, 15)));
+                        tokens.push(tNum());
                         if (i < level.length - 1) tokens.push(tOp());
                     }
                 } else if (levelId === 4) {
-                    const nums = [getRandomInt(1, 12), getRandomInt(1, 12), getRandomInt(1, 12), getRandomInt(1, 12)];
                     const pattern = getRandomInt(0, 2);
-                    if (pattern === 0) tokens = [tBra('('), tNum(nums[0]), tOp(), tNum(nums[1]), tBra(')'), tOp(), tNum(nums[2]), tOp(), tNum(nums[3])];
-                    else if (pattern === 1) tokens = [tNum(nums[0]), tOp(), tBra('('), tNum(nums[1]), tOp(), tNum(nums[2]), tBra(')'), tOp(), tNum(nums[3])];
-                    else tokens = [tNum(nums[0]), tOp(), tNum(nums[1]), tOp(), tBra('('), tNum(nums[2]), tOp(), tNum(nums[3]), tBra(')')];
+                    if (pattern === 0) tokens = [tBra('('), tNum(), tOp(), tNum(), tBra(')'), tOp(), tNum(), tOp(), tNum()];
+                    else if (pattern === 1) tokens = [tNum(), tOp(), tBra('('), tNum(), tOp(), tNum(), tBra(')'), tOp(), tNum()];
+                    else tokens = [tNum(), tOp(), tNum(), tOp(), tBra('('), tNum(), tOp(), tNum(), tBra(')')];
                 } else if (levelId === 5) {
-                    // Level 5: 5 or 6 numbers, 1 or 2 brackets, 1 or 2 ops per bracket
                     const numCount = getRandomInt(5, 6);
                     const bracketCount = getRandomInt(1, 2);
-                    const nums = Array.from({ length: numCount }, () => getRandomInt(1, 12));
-
                     if (numCount === 5) {
                         if (bracketCount === 1) {
-                            // (n op n op n) op n op n
-                            tokens = [tBra('('), tNum(nums[0]), tOp(), tNum(nums[1]), tOp(), tNum(nums[2]), tBra(')'), tOp(), tNum(nums[3]), tOp(), tNum(nums[4])];
+                            tokens = [tBra('('), tNum(), tOp(), tNum(), tOp(), tNum(), tBra(')'), tOp(), tNum(), tOp(), tNum()];
                         } else {
-                            // (n op n) op (n op n) op n
-                            tokens = [tBra('('), tNum(nums[0]), tOp(), tNum(nums[1]), tBra(')'), tOp(), tBra('('), tNum(nums[2]), tOp(), tNum(nums[3]), tBra(')'), tOp(), tNum(nums[4])];
+                            tokens = [tBra('('), tNum(), tOp(), tNum(), tBra(')'), tOp(), tBra('('), tNum(), tOp(), tNum(), tBra(')'), tOp(), tNum()];
                         }
-                    } else { // 6 numbers
+                    } else { 
                         if (bracketCount === 1) {
-                            // n op (n op n op n) op n op n
-                            tokens = [tNum(nums[0]), tOp(), tBra('('), tNum(nums[1]), tOp(), tNum(nums[2]), tOp(), tNum(nums[3]), tBra(')'), tOp(), tNum(nums[4]), tOp(), tNum(nums[5])];
+                            tokens = [tNum(), tOp(), tBra('('), tNum(), tOp(), tNum(), tOp(), tNum(), tBra(')'), tOp(), tNum(), tOp(), tNum()];
                         } else {
                             const innerPattern = getRandomInt(0, 1);
                             if (innerPattern === 0) {
-                                // (n op n op n) op (n op n) op n
-                                tokens = [tBra('('), tNum(nums[0]), tOp(), tNum(nums[1]), tOp(), tNum(nums[2]), tBra(')'), tOp(), tBra('('), tNum(nums[3]), tOp(), tNum(nums[4]), tBra(')'), tOp(), tNum(nums[5])];
+                                tokens = [tBra('('), tNum(), tOp(), tNum(), tOp(), tNum(), tBra(')'), tOp(), tBra('('), tNum(), tOp(), tNum(), tBra(')'), tOp(), tNum()];
                             } else {
-                                // (n op n) op n op (n op n op n)
-                                tokens = [tBra('('), tNum(nums[0]), tOp(), tNum(nums[1]), tBra(')'), tOp(), tNum(nums[2]), tOp(), tBra('('), tNum(nums[3]), tOp(), tNum(nums[4]), tOp(), tNum(nums[5]), tBra(')')];
+                                tokens = [tBra('('), tNum(), tOp(), tNum(), tBra(')'), tOp(), tNum(), tOp(), tBra('('), tNum(), tOp(), tNum(), tOp(), tNum(), tBra(')')];
                             }
                         }
                     }
@@ -315,7 +308,7 @@
 
                 if (isValidEquation(tokens)) return tokens;
             }
-            return [{type:'num', value:10, id:'f1'}, {type:'op', value:'+', id:'f2'}, {type:'num', value:5, id:'f3'}];
+            return [{type:'num', value:9, id:'f1'}, {type:'op', value:'+', id:'f2'}, {type:'num', value:1, id:'f3'}];
         };
 
         const isValidEquation = (initialTokens) => {
@@ -326,8 +319,8 @@
                 const move = moves[0];
                 const val = safeEval(move.left.value, move.op.value, move.right.value);
                 if (move.op.value === '/' && move.left.value % move.right.value !== 0) return false;
-                if (move.op.value === '-' && val <= 0) return false;
-                if (!Number.isInteger(val) || val <= 0 || val > 1000) return false;
+                if (move.op.value === '-' && val <= 0) return false; 
+                if (!Number.isInteger(val) || val < 0 || val > 2000) return false;
                 const newTokens = [];
                 for (let i = 0; i < tokens.length; i++) {
                     if (tokens[i].id === move.left.id) {
@@ -433,8 +426,8 @@
                     <div class="flex items-center gap-6">
                         <div class="pixel-card" style="width: 8vmin; height: 8vmin; display: flex; align-items: center; justify-content:center; background: white; color: black; font-size: 5vmin; box-shadow:none; margin:0;">${lvl.id}</div>
                         <div style="text-align: left;">
-                            <h3 style="margin:0; font-size: 5vmin;">${lvl.name}</h3>
-                            <p style="margin:0; font-size: 2.5vmin; opacity: 0.9;">${lvl.desc}</p>
+                            <h3 style="margin:0; font-size: 4vmin;">${lvl.name}</h3>
+                            <p style="margin:0; font-size: 2.2vmin; opacity: 0.9;">${lvl.desc}</p>
                         </div>
                     </div>
                     <div>${ICONS.chevron}</div>
@@ -444,10 +437,10 @@
             appEl.innerHTML = `
                 <div class="scroll-container">
                     <div class="pixel-card p-8 mb-8 text-center" style="background: rgba(255,255,255,0.85);">
-                        <h1 style="font-size: 10vmin; color: var(--green-600); margin:0; text-shadow: 0.5vmin 0.5vmin 0 white;">MATH QUEST</h1>
-                        <p style="font-size: 4vmin; color: var(--stone-600); font-weight: bold;">Follow Order of Operations to Defeat the Monster!</p>
+                        <h1 style="font-size: 9vmin; color: var(--green-600); margin:0; text-shadow: 0.5vmin 0.5vmin 0 white;">MATH QUEST</h1>
+                        <p style="font-size: 3.8vmin; color: var(--stone-600); font-weight: bold;">Follow Order of Operations to Defeat the Monster!</p>
                     </div>
-                    <div class="flex flex-col w-full" style="max-width: 900px;">${levelsHtml}</div>
+                    <div class="flex flex-col w-full" style="max-width: 800px; margin: 0 auto;">${levelsHtml}</div>
                 </div>
             `;
         }
@@ -463,8 +456,8 @@
                         ${state.isMusicOn ? ICONS.speaker : ICONS.speakerOff}
                     </button>
                     <div class="flex flex-col items-center">
-                        <div style="font-weight:bold; font-size: 4vmin;">LEVEL ${state.currentLevel}</div>
-                        <div style="font-weight:bold; font-size: 2.5vmin; color: var(--stone-500);">QUESTION: ${state.questionCount}/10</div>
+                        <div style="font-weight:bold; font-size: 3.5vmin;">LEVEL ${state.currentLevel}</div>
+                        <div style="font-weight:bold; font-size: 2vmin; color: var(--stone-500);">QUESTION: ${state.questionCount}/10</div>
                     </div>
                     <button onclick="exitGame()" class="btn" style="padding: 0.5vmin 2vmin; font-size: 3vmin; height: 8vmin; background: var(--red-500); color:white;">EXIT</button>
                 </div>
@@ -502,20 +495,20 @@
 
                 contentHtml = `
                     <div class="text-center w-full">
-                        <h2 style="font-size: 6vmin; color: var(--green-600); margin-top:0;">CORRECT SOLUTION!</h2>
+                        <h2 style="font-size: 5vmin; color: var(--green-600); margin-top:0;">CORRECT SOLUTION!</h2>
                         <div class="pixel-card p-6 mb-6" style="background: rgba(255,255,255,0.95); text-align: left; display: inline-block; min-width: 70%; border-color: var(--green-600);">
                             ${workLines.join('')}
                         </div>
                         <br>
-                        <button onclick="proceedToNextQuestion()" class="btn" style="padding: 2vmin 6vmin; background: var(--green-500); color: white; font-size: 5vmin;">NEXT QUESTION</button>
+                        <button onclick="proceedToNextQuestion()" class="btn" style="padding: 1.5vmin 5vmin; background: var(--green-500); color: white; font-size: 4vmin;">NEXT QUESTION</button>
                     </div>
                 `;
             } else if (state.gameState === 'victory' || state.gameState === 'gameover') {
                 contentHtml = `
                     <div class="text-center py-10 pixel-card w-full" style="background: rgba(255,255,255,0.9);">
-                        <h2 style="font-size: 10vmin; margin:0;">${state.gameState === 'victory' ? 'VICTORY!' : 'DEFEAT!'}</h2>
-                        <p style="font-size: 6vmin;">Monster Score: ${state.monsterHP}</p>
-                        <button onclick="exitGame()" class="btn" style="padding: 2vmin 6vmin; font-size: 5vmin; background: white;">RETURN TO MENU</button>
+                        <h2 style="font-size: 9vmin; margin:0;">${state.gameState === 'victory' ? 'VICTORY!' : 'DEFEAT!'}</h2>
+                        <p style="font-size: 5vmin;">Monster Score: ${state.monsterHP}</p>
+                        <button onclick="exitGame()" class="btn" style="padding: 1.5vmin 5vmin; font-size: 4vmin; background: white;">RETURN TO MENU</button>
                     </div>
                 `;
             } else {
@@ -531,14 +524,14 @@
 
                 contentHtml = `
                     <div class="mb-4 p-4 text-center pixel-card feedback-box w-full" style="border-color: ${feedbackColor}; color: ${feedbackColor};">${state.feedback}</div>
-                    <div class="flex items-center justify-center flex-wrap gap-1 p-6 pixel-card w-full" style="background: rgba(255,255,255,0.85); min-height: 15vmin;">${tokensHtml}</div>
+                    <div class="flex items-center justify-center flex-wrap gap-1 p-4 pixel-card w-full" style="background: rgba(255,255,255,0.85); min-height: 12vmin;">${tokensHtml}</div>
                     ${state.selectedStep ? `
-                        <div class="pixel-card p-6 mt-6 text-center w-full" style="background: var(--stone-800); color: white;">
-                            <div class="mb-4" style="font-size: 6vmin; color: var(--yellow-300);">${state.selectedStep.left.value} ${getDisplayOp(state.selectedStep.op.value)} ${state.selectedStep.right.value} = ?</div>
+                        <div class="pixel-card p-6 mt-4 text-center w-full" style="background: var(--stone-800); color: white;">
+                            <div class="mb-2" style="font-size: 5vmin; color: var(--yellow-300);">${state.selectedStep.left.value} ${getDisplayOp(state.selectedStep.op.value)} ${state.selectedStep.right.value} = ?</div>
                             <form onsubmit="handleInputSubmit(event)" class="flex justify-center gap-6">
                                 <input id="gameInput" type="number" class="game-input" oninput="state.inputValue = this.value">
-                                <button type="submit" class="btn" style="background: var(--green-500); color: white; font-size: 4vmin; padding: 0 4vmin;">STRIKE</button>
-                                <button type="button" onclick="cancelStep()" class="btn" style="background: var(--red-500); color: white; font-size: 4vmin; padding: 0 2vmin;">X</button>
+                                <button type="submit" class="btn" style="background: var(--green-500); color: white; font-size: 3.5vmin; padding: 0 3vmin;">STRIKE</button>
+                                <button type="button" onclick="cancelStep()" class="btn" style="background: var(--red-500); color: white; font-size: 3.5vmin; padding: 0 1.5vmin;">X</button>
                             </form>
                         </div>
                     ` : ''}
